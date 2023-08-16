@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {Tabs, Tab, Box} from '@mui/material';
 import {AppDispatch, RootState} from '../redux/store';
 import { fetchEmployees, createEmployee, updateEmployee } from '../redux/actions';
-import {CreateEmployee} from "../types";
+import {CreateEmployee, Employee, HomeAddress} from "../types";
 import EmployeeForm from "../components/form/EmployeeForm.tsx";
 import DeleteForm from "../components/form/DeleteForm.tsx";
 import NoResults from "../components/NoResults.tsx";
@@ -30,6 +30,7 @@ const Employees: React.FC = () => {
   const error = useSelector((state: RootState)=> state.employees?.error);
   const [activeTab, setActiveTab] = useState(0);
   const employees = useSelector((state: RootState) => state.employees?.employees);
+  const [formEmployee, setFormEmployee] = useState<CreateEmployee>(defaultNewEmployee);
 
   useEffect(() => {
     dispatch(fetchEmployees({}));
@@ -39,9 +40,29 @@ const Employees: React.FC = () => {
     setActiveTab(newValue);
   };
 
+  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = e.target;
+  //   setNewEmployee(prev => ({ ...prev, [name]: value }));
+  // }
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewEmployee(prev => ({ ...prev, [name]: value }));
+    if (name.includes('.')) {
+      const [key, nestedKey] = name.split('.');
+      if (key === 'homeAddress') {
+        setFormEmployee(prev => ({
+          ...prev,
+          homeAddress: {
+            ...prev.homeAddress,
+            [nestedKey as keyof HomeAddress]: value
+          }
+        }));
+      }
+    } else {
+      setFormEmployee(prev => ({
+        ...prev,
+        [name as keyof Omit<Employee, 'homeAddress'>]: value
+      }));
+    }
   }
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -80,6 +101,10 @@ const Employees: React.FC = () => {
           formType="create"
           handleInputChange={handleInputChange}
           handleFormSubmit={handleFormSubmit}
+          selectedEmployeeId={null}
+          setSelectedEmployeeId={() => {}}
+          selectedEmployee={formEmployee}
+          setFormEmployee={setFormEmployee}
         />
       </Box>
 
@@ -90,7 +115,10 @@ const Employees: React.FC = () => {
           handleFormSubmit={handleFormSubmit}
           selectedEmployeeId={selectedEmployeeId}
           setSelectedEmployeeId={setSelectedEmployeeId}
+          selectedEmployee={formEmployee}
+          setFormEmployee={setFormEmployee}
         />
+
       </Box>
 
       <Box hidden={activeTab !== 2} padding={3}>

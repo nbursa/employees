@@ -12,7 +12,7 @@ export interface HomeAddress {
 }
 
 export interface Employee {
-  _id: string;
+  _id: string | null;
   name: string;
   email: string;
   phoneNumber: string;
