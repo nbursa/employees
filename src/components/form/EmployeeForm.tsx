@@ -1,18 +1,21 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  Button, FormControl, Input, InputLabel, FormGroup, TextField, Select, MenuItem
+  Button, FormControl, Input, InputLabel, FormGroup, TextField, Select, MenuItem,
 } from '@mui/material';
 import {CreateEmployee, Employee} from "../../types";
 import {useSelector} from "react-redux";
 import {RootState} from "../../redux/store.ts";
 
 interface EmployeeFormProps {
-  newEmployee: typeof defaultNewEmployee;
+  newEmployee?: CreateEmployee;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleFormSubmit: (e: React.FormEvent) => void;
   formType: 'create' | 'update';
   employee?: CreateEmployee;
   employees?: CreateEmployee[];
+  selectedEmployeeId?: string | null;
+  setSelectedEmployeeId?: React.Dispatch<React.SetStateAction<string | null>>;
+
 }
 
 const defaultNewEmployee: Employee = {
@@ -32,10 +35,19 @@ const defaultNewEmployee: Employee = {
   deletedAt: null
 };
 
-const EmployeeForm: React.FC<EmployeeFormProps> = ({ formType = 'create', newEmployee, handleInputChange, handleFormSubmit }) => {
-const employee = newEmployee ? newEmployee : defaultNewEmployee;
+const EmployeeForm: React.FC<EmployeeFormProps> = ({ formType = 'create', handleInputChange, handleFormSubmit }) => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const employees = useSelector((state: RootState) => state.employees.employees);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+
+  const employee = (formType === 'update' && selectedEmployee) ? selectedEmployee : defaultNewEmployee;
+
+  useEffect(() => {
+    if (selectedEmployeeId && employees) {
+      const foundEmployee = employees.find(emp => emp._id === selectedEmployeeId);
+      setSelectedEmployee(foundEmployee || null);
+    }
+  }, [selectedEmployeeId]);
 
   return (
   <form onSubmit={handleFormSubmit} className="mb-4 flex flex-col items-baseline gap-2">
@@ -46,7 +58,7 @@ const employee = newEmployee ? newEmployee : defaultNewEmployee;
         <InputLabel className="text-sm font-medium text-gray-700">Select Employee to Update</InputLabel>
         <Select
           value={selectedEmployeeId || ''}
-          onChange={e => setSelectedEmployeeId(e.target.value as string)}
+          onChange={e => setSelectedEmployeeId && setSelectedEmployeeId(e.target.value as string)}
           className="mt-1 p-2 border rounded-md w-full"
         >
           {employees.map((emp: Employee) => (
@@ -55,6 +67,7 @@ const employee = newEmployee ? newEmployee : defaultNewEmployee;
         </Select>
       </FormControl>
     )}
+
 
     <FormGroup className="container mx-auto px-4 flex flex-col">
       {/* Basic Information */}

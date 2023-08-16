@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {Button, FormControl, Input, InputLabel, Select, MenuItem, FormGroup, Tabs, Tab, Box} from '@mui/material';
+import {Tabs, Tab, Box} from '@mui/material';
 import {AppDispatch, RootState} from '../redux/store';
-import { fetchEmployees, createEmployee, updateEmployee, softDeleteEmployee } from '../redux/actions';
+import { fetchEmployees, createEmployee, updateEmployee } from '../redux/actions';
 import {CreateEmployee} from "../types";
 import EmployeeForm from "../components/form/EmployeeForm.tsx";
 import DeleteForm from "../components/form/DeleteForm.tsx";
+import NoResults from "../components/NoResults.tsx";
 
 const Employees: React.FC = () => {
   const defaultNewEmployee: CreateEmployee = {
@@ -24,43 +25,19 @@ const Employees: React.FC = () => {
     deletedAt: null
   };
   const dispatch = useDispatch<AppDispatch>();
-  const employees = useSelector((state: RootState) => state.employees?.employees);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [newEmployee, setNewEmployee] = useState<CreateEmployee>(defaultNewEmployee);
   const error = useSelector((state: RootState)=> state.employees?.error);
   const [activeTab, setActiveTab] = useState(0);
+  const employees = useSelector((state: RootState) => state.employees?.employees);
 
   useEffect(() => {
     dispatch(fetchEmployees({}));
   }, [dispatch]);
 
-  const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChangeTab = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
-
-  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target;
-  //   setNewEmployee(prev => ({ ...prev, [name]: value }));
-  // };
-  //
-  // const handleFormSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   dispatch(createEmployee(newEmployee));
-  //   setNewEmployee(defaultNewEmployee);
-  // };
-
-  // const handleUpdateEmployee = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (selectedEmployeeId) {
-  //     dispatch(updateEmployee({ id: selectedEmployeeId, ...newEmployee }));
-  //   }
-  // };
-
-  // const handleSoftDelete = () => {
-  //   if (selectedEmployeeId) {
-  //     dispatch(softDeleteEmployee(selectedEmployeeId));
-  //   }
-  // };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -75,6 +52,7 @@ const Employees: React.FC = () => {
     dispatch(createEmployee(newEmployee));
     return setNewEmployee(defaultNewEmployee);
   }
+  console.log('employees', employees);
 
   return (
     <div className="container mx-auto px-4">
@@ -87,6 +65,10 @@ const Employees: React.FC = () => {
         </div>
       )}
 
+      {employees && employees.length === 0 && (
+        <NoResults/>
+      )}
+
       <Tabs value={activeTab} onChange={handleChangeTab}>
         <Tab label="Create Employee" />
         <Tab label="Update Employee" />
@@ -96,7 +78,6 @@ const Employees: React.FC = () => {
       <Box hidden={activeTab !== 0} padding={3}>
         <EmployeeForm
           formType="create"
-          employee={newEmployee}
           handleInputChange={handleInputChange}
           handleFormSubmit={handleFormSubmit}
         />
@@ -105,12 +86,12 @@ const Employees: React.FC = () => {
       <Box hidden={activeTab !== 1} padding={3}>
         <EmployeeForm
           formType="update"
-          employee={employees.find(emp => emp._id === selectedEmployeeId) || defaultNewEmployee}
           handleInputChange={handleInputChange}
           handleFormSubmit={handleFormSubmit}
+          selectedEmployeeId={selectedEmployeeId}
+          setSelectedEmployeeId={setSelectedEmployeeId}
         />
       </Box>
-
 
       <Box hidden={activeTab !== 2} padding={3}>
         <DeleteForm />
