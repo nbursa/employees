@@ -22,7 +22,7 @@ const DeleteForm: React.FC = () => {
     <form onSubmit={handleSoftDelete} className="mb-4 flex flex-col items-baseline gap-2">
       <h3 className="text-xl font-bold mb-2">Delete Employee</h3>
 
-      <FormControl className="mb-4" margin="normal">
+      <FormControl className="mb-4 w-full" margin="normal">
         <InputLabel className="text-sm font-medium text-gray-700">Select Employee to Soft Delete</InputLabel>
         <Select
           value={selectedEmployeeId || ''}
@@ -30,7 +30,7 @@ const DeleteForm: React.FC = () => {
           className="mt-1 p-2 border rounded-md w-full"
         >
           {employees.map((emp: Employee) => (
-            <MenuItem key={emp._id} value={emp._id} className="py-2">{emp.name}</MenuItem>
+            emp._id ? <MenuItem key={emp._id} value={emp._id} className="py-2">{emp.name}</MenuItem> : null
           ))}
         </Select>
       </FormControl>

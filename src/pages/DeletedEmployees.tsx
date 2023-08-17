@@ -1,20 +1,25 @@
 import React from 'react';
-import {Employee} from "../types";
+import {useSelector} from "react-redux";
+import {RootState} from "../redux/store.ts";
+import NoResults from "../components/NoResults.tsx";
 
-interface DeletedEmployeesProps {
-  deletedEmployees: Employee[];
-}
+const DeletedEmployees: React.FC = () => {
+  const deletedEmployees = useSelector((state: RootState) =>
+    state.employees.employees.filter(employee => employee.isDeleted)
+  );
 
-const DeletedEmployees: React.FC<DeletedEmployeesProps> = ({ deletedEmployees }) => {
   return (
-    <div>
-      <h2>Deleted Employees</h2>
+    <div className='flex flex-col justify-center items-center'>
+      <h3 className="text-xl font-bold mb-2">Deleted Employees</h3>
       <ul>
-        {deletedEmployees.map(employee => (
+        {!!deletedEmployees.length && deletedEmployees.map(employee => (
           <li key={employee._id}>
             {employee._id} - {employee.name}
           </li>
         ))}
+        {!deletedEmployees.length &&
+            <NoResults title='No Deleted Employees' message='Deleted employees will show here.'/>
+        }
       </ul>
     </div>
   );

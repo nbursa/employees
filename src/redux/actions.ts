@@ -1,20 +1,20 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import {createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
-import {
-  Employee,
-  CreateEmployee,
-  UpdateEmployee,
-  EmployeeResponse } from '../types';
-import { ENDPOINTS } from '../api/config.ts';
+import {CreateEmployeeResponse, Employee, EmployeeResponse, UpdateEmployee, ValidationErrorPayload} from '../types';
+import {ENDPOINTS} from '../api/config.ts';
 
 export const fetchEmployees = createAsyncThunk(
   'employees/fetchAll',
-  async (params: { page?: number, limit?: number } = {}) => {
-    const response = await axios.get<EmployeeResponse>(ENDPOINTS.GET_EMPLOYEES, {
-      params: params
-    });
-    // console.log('response.data.employees', response.data.employees);
-    return response.data.employees;
+  async (params: { page?: number, limit?: number } = {}, thunkAPI) => {
+    try {
+      const response = await axios.get<EmployeeResponse>(ENDPOINTS.GET_EMPLOYEES, {
+        params: params
+      });
+      return response.data.employees;
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+      return thunkAPI.rejectWithValue(error);
+    }
   }
 );
 
@@ -26,7 +26,6 @@ export const fetchEmployeeById = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.error(`Error fetching employee by ID (${id}):`, error);
-      // Reject with error so you can handle it in a rejected reducer later if needed
       return thunkAPI.rejectWithValue(error);
     }
   }
@@ -34,35 +33,52 @@ export const fetchEmployeeById = createAsyncThunk(
 
 export const createEmployee = createAsyncThunk(
   'employees/create',
-  async (employeeData: { name: string; email: string }) => {
-    const response = await axios.post<CreateEmployee>(ENDPOINTS.CREATE_EMPLOYEE, employeeData);
-    return response.data;
-  }
-);
-
-export const updateEmployee = createAsyncThunk(
-  'employees/update',
-  async (updateData: { id: string; name?: string; email?: string }, thunkAPI) => {
+  async (employeeData: Employee, thunkAPI) => {
     try {
-      const response = await axios.put<UpdateEmployee>(ENDPOINTS.UPDATE_EMPLOYEE(updateData.id), {
-        name: updateData.name,
-        email: updateData.email
-      });
+      const response = await axios.post<CreateEmployeeResponse>(ENDPOINTS.CREATE_EMPLOYEE, employeeData);
       return response.data;
-    } catch (error) {
-      console.error(`Error updating employee (${updateData.id}):`, error);
-      // Reject with error so you can handle it in a rejected reducer later if needed
-      return thunkAPI.rejectWithValue(error);
+
+    } catch (error: any) {
+      console.error('Error while creating employee:', error);
+
+      if (error.response && error.response.data && Array.isArray(error.response.data.message)) {
+        const errorMessages = error.response.data.message;
+        const errors: ValidationErrorPayload = {};
+        errorMessages.forEach((errorMsg: string) => {
+          const spaceIndex = errorMsg.indexOf(' ');
+          const field = errorMsg.substring(0, spaceIndex)
+          errors[field] = errorMsg.substring(spaceIndex + 1);
+        });
+        console.log('thunkAPI errors', errors);
+        return errors;
+      }
+
+      // For other errors, return a generic error message
+      return thunkAPI.rejectWithValue(error.message || 'Unexpected error occurred.');
     }
   }
 );
 
 
+export const updateEmployee = createAsyncThunk(
+  'employees/update',
+  async (updateData: { id: string; name?: string; email?: string }, thunkAPI) => {
+    try {
+      const response = await axios.patch<UpdateEmployee>(ENDPOINTS.UPDATE_EMPLOYEE(updateData.id), updateData);
+      return response.data;
+    } catch (error) {
+      console.error(`Error updating employee (${updateData.id}):`, error);
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const softDeleteEmployee = createAsyncThunk(
   'employees/softDelete',
   async (id: string, thunkAPI) => {
     try {
-      return { id };
+      const response = await axios.delete(ENDPOINTS.SOFT_DELETE_EMPLOYEE(id));
+      return response.data;
     } catch (error) {
       console.error(`Error soft-deleting employee (${id}):`, error);
       return thunkAPI.rejectWithValue(error);

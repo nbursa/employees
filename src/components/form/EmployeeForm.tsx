@@ -1,10 +1,9 @@
 import React, {useEffect} from 'react';
-import {
-  Button, FormControl, Input, InputLabel, FormGroup, TextField, Select, MenuItem,
-} from '@mui/material';
-import {CreateEmployee, Employee} from "../../types";
+import {Button, FormControl, InputLabel, FormGroup, Select, MenuItem} from '@mui/material';
+import {CreateEmployee, Employee, ValidationErrorPayload} from "../../types";
 import {useSelector} from "react-redux";
 import {RootState} from "../../redux/store.ts";
+import FormControlComponent from './FormControlComponent';
 
 interface EmployeeFormProps {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -14,167 +13,134 @@ interface EmployeeFormProps {
   setSelectedEmployeeId: React.Dispatch<React.SetStateAction<string | null>>;
   selectedEmployee: CreateEmployee;
   setFormEmployee: React.Dispatch<React.SetStateAction<CreateEmployee>>;
+  formErrors: ValidationErrorPayload;
 }
 
-const defaultNewEmployee: Employee = {
-  _id: '',
+const defaultNewEmployee: CreateEmployee = {
   name: '',
   email: '',
   phoneNumber: '',
+  dateOfEmployment: new Date().toISOString().substring(0, 10),
+  dateOfBirth: new Date().toISOString().substring(0, 10),
   homeAddress: {
     city: '',
     ZIPCode: '',
     addressLine1: '',
     addressLine2: ''
   },
-  dateOfEmployment: '',
-  dateOfBirth: '',
   isDeleted: false,
   deletedAt: null
 };
 
-const EmployeeForm: React.FC<EmployeeFormProps> = ({ formType = 'create', handleInputChange, handleFormSubmit, selectedEmployeeId, setSelectedEmployeeId, selectedEmployee, setFormEmployee }) => {
-  // const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
-  const employees = useSelector((state: RootState) => state.employees.employees);
-  // const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
 
-  // const employee = (formType === 'update' && selectedEmployee) ? selectedEmployee : defaultNewEmployee;
+const EmployeeForm: React.FC<EmployeeFormProps> = ({
+                                                     formType, handleInputChange, handleFormSubmit, selectedEmployeeId, setSelectedEmployeeId,
+                                                     selectedEmployee, setFormEmployee, formErrors
+                                                   }) => {
+  const employees = useSelector((state: RootState) => state.employees.employees);
+
+  const getFieldError = (fieldName: string): string | null => {
+    return formErrors[fieldName] || null;
+  };
+
+  const errorMap = (fieldName: string, fieldValue: string): boolean => {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    const phoneNumberRegex = /^\+\d{11,12}$/;
+    const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/;
+
+    switch (fieldName) {
+      case 'name':
+        return fieldValue.length < 3;
+      case 'email':
+        return !emailRegex.test(fieldValue);
+      case 'phoneNumber':
+        return !phoneNumberRegex.test(fieldValue);
+      case 'dateOfEmployment':
+        return !dateTimeRegex.test(fieldValue);
+      case 'dateOfBirth':
+        return !dateTimeRegex.test(fieldValue);
+      case 'homeAddress.city':
+        return fieldValue.length === 0;
+      case 'homeAddress.ZIPCode':
+        return fieldValue.length !== 5;
+      case 'homeAddress.addressLine1':
+        return fieldValue.length > 0;
+      default:
+        return false;
+    }
+  };
+
+  const toISODateString = (dateString: string) => {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return "";
+    }
+    return date.toISOString();
+  };
+
+  const formFields = [
+    {label: "Name", name: "name", type: "text", value: selectedEmployee.name},
+    {label: "Email", name: "email", type: "text", value: selectedEmployee.email},
+    {label: "Phone Number", name: "phoneNumber", type: "text", value: selectedEmployee.phoneNumber},
+    {label: "Date of Employment", name: "dateOfEmployment", type: "date", value: toISODateString(selectedEmployee.dateOfEmployment)},
+    {label: "Date of Birth", name: "dateOfBirth", type: "date", value: toISODateString(selectedEmployee.dateOfBirth)},
+    {label: "City", name: "homeAddress.city", type: "text", value: selectedEmployee.homeAddress.city},
+    {label: "ZIP Code", name: "homeAddress.ZIPCode", type: "text", value: selectedEmployee.homeAddress.ZIPCode},
+    {label: "Address Line 1", name: "homeAddress.addressLine1", type: "text", value: selectedEmployee.homeAddress.addressLine1},
+    {label: "Address Line 2", name: "homeAddress.addressLine2", type: "text", value: selectedEmployee.homeAddress.addressLine2}
+  ];
+
+  const capitalizeFirstLetter = (word: string) => {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }
 
   useEffect(() => {
-    if (selectedEmployeeId && employees) {
+    if (selectedEmployeeId) {
       const foundEmployee = employees.find(emp => emp._id === selectedEmployeeId);
       setFormEmployee(foundEmployee || defaultNewEmployee);
+    } else {
+      setFormEmployee(defaultNewEmployee);
     }
   }, [selectedEmployeeId, employees, setFormEmployee]);
 
-
   return (
-  <form onSubmit={handleFormSubmit} className="mb-4 flex flex-col items-baseline gap-2">
-    <h3 className="text-xl font-bold mb-2">{formType} Employee</h3>
+    <form onSubmit={handleFormSubmit} className="mb-4 flex flex-col items-baseline gap-2">
+      <h3 className="text-xl font-bold mb-2">{capitalizeFirstLetter(formType)} Employee</h3>
 
-    {formType === 'update' && (
-      <FormControl className="mb-4" margin="normal">
-        <InputLabel className="text-sm font-medium text-gray-700">Select Employee to Update</InputLabel>
-        <Select
-          value={selectedEmployeeId || ''}
-          onChange={e => setSelectedEmployeeId(e.target.value as string)}
-          className="mt-1 p-2 border rounded-md w-full"
-        >
-          {employees.map((emp: Employee) => (
-            <MenuItem key={emp._id || undefined} value={emp._id || ''} className="py-2">{emp.name}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    )}
+      <FormGroup className="container mx-auto px-4 flex flex-col">
+        {formType === 'update' && (
+          <FormControl className="mb-4 w-full" margin="normal">
+            <InputLabel className="text-sm font-medium text-gray-700">Select Employee to Update</InputLabel>
+            <Select
+              value={selectedEmployeeId || ''}
+              onChange={e => setSelectedEmployeeId(e.target.value as string)}
+              className="mt-1 p-2 border rounded-md w-full"
+            >
+              {employees.map((emp: Employee) => (
+                <MenuItem key={emp._id || undefined} value={emp._id || ''} className="py-2">{emp.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+        {formFields.map(field => (
+          <FormControlComponent
+            key={field.name}
+            label={field.label}
+            name={field.name}
+            type={field.type}
+            value={field.value}
+            onChange={handleInputChange}
+            error={errorMap(field.name, field.value) ? getFieldError(field.name) : null}
+          />
+        ))}
+      </FormGroup>
 
-
-
-    <FormGroup className="container mx-auto px-4 flex flex-col">
-      {/* Basic Information */}
-      <FormControl margin="normal">
-        <InputLabel htmlFor="name">Name</InputLabel>
-        <Input
-          id="name"
-          name="name"
-          value={selectedEmployee.name}
-          onChange={handleInputChange}
-        />
-      </FormControl>
-
-      <FormControl margin="normal">
-        <InputLabel htmlFor="email">Email</InputLabel>
-        <Input
-          id="email"
-          name="email"
-          value={selectedEmployee.email}
-          onChange={handleInputChange}
-        />
-      </FormControl>
-
-      <FormControl margin="normal">
-        <InputLabel htmlFor="phoneNumber">Phone Number</InputLabel>
-        <Input
-          id="phoneNumber"
-          name="phoneNumber"
-          value={selectedEmployee.phoneNumber}
-          onChange={handleInputChange}
-        />
-      </FormControl>
-
-      <FormControl margin="normal">
-        <InputLabel htmlFor="dateOfEmployment">Date of Employment</InputLabel>
-        <TextField
-          id="dateOfEmployment"
-          name="dateOfEmployment"
-          type="date"
-          value={selectedEmployee.dateOfEmployment}
-          onChange={handleInputChange}
-          InputLabelProps={{shrink: true}}
-        />
-      </FormControl>
-
-      <FormControl margin="normal">
-        <InputLabel htmlFor="dateOfBirth">Date of Birth</InputLabel>
-        <TextField
-          id="dateOfBirth"
-          name="dateOfBirth"
-          type="date"
-          value={selectedEmployee.dateOfBirth}
-          onChange={handleInputChange}
-          InputLabelProps={{shrink: true}}
-        />
-      </FormControl>
-
-      {/* Home Address */}
-      <h4 className="text-lg font-medium mb-2 mt-4">Home Address</h4>
-      <FormControl margin="normal">
-        <InputLabel htmlFor="city">City</InputLabel>
-        <Input
-          id="city"
-          name="homeAddress.city"
-          value={selectedEmployee.homeAddress.city}
-          onChange={handleInputChange}
-        />
-      </FormControl>
-
-      <FormControl margin="normal">
-        <InputLabel htmlFor="ZIPCode">ZIP Code</InputLabel>
-        <Input
-          id="ZIPCode"
-          name="homeAddress.ZIPCode"
-          value={selectedEmployee.homeAddress.ZIPCode}
-          onChange={handleInputChange}
-        />
-      </FormControl>
-
-      <FormControl margin="normal">
-        <InputLabel htmlFor="addressLine1">Address Line 1</InputLabel>
-        <Input
-          id="addressLine1"
-          name="homeAddress.addressLine1"
-          value={selectedEmployee.homeAddress.addressLine1}
-          onChange={handleInputChange}
-        />
-      </FormControl>
-
-      <FormControl margin="normal">
-        <InputLabel htmlFor="addressLine2">Address Line 2</InputLabel>
-        <Input
-          id="addressLine2"
-          name="homeAddress.addressLine2"
-          value={selectedEmployee.homeAddress.addressLine2}
-          onChange={handleInputChange}
-        />
-      </FormControl>
-
-    </FormGroup>
-
-    <Button type="submit" variant="contained" color="primary">
-      {`${formType} Employee`}
-    </Button>
-
+      <Button type="submit" variant="contained" color="primary">
+        {`${formType} Employee`}
+      </Button>
     </form>
   );
+
 }
 
 export default EmployeeForm;

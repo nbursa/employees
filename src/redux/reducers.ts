@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Employee } from '../types';
-import {fetchEmployees, softDeleteEmployee, fetchEmployeeById} from './actions';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {Employee} from '../types';
+import {fetchEmployees, softDeleteEmployee, fetchEmployeeById, createEmployee} from './actions';
 
 type EmployeeState = {
   employees: Employee[];
@@ -17,7 +17,7 @@ const initialState: EmployeeState = {
 };
 
 const employeeSlice = createSlice({
-  name: 'employee',
+  name: 'employees',
   initialState,
   reducers: {
     employeesFetched(state, action: PayloadAction<Employee[]>) {
@@ -30,6 +30,17 @@ const employeeSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(createEmployee.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createEmployee.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.employees.push(action.payload as Employee);
+      })
+      .addCase(createEmployee.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string || 'Failed to create employee.';
+      })
       .addCase(fetchEmployees.pending, (state) => {
         state.status = 'loading';
       })
@@ -40,14 +51,13 @@ const employeeSlice = createSlice({
       .addCase(fetchEmployees.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || 'Failed to fetch employees.';
+        console.log('fetchEmployees.rejected', action.error.message || 'Failed to fetch employees.')
       })
       .addCase(fetchEmployeeById.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(fetchEmployeeById.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        // Assuming your API returns the employee as part of the response data.
-        // Adjust as needed.
         const employee = action.payload;
         state.employees = [...state.employees.filter(emp => emp._id !== employee._id), employee];
       })
@@ -59,19 +69,19 @@ const employeeSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(softDeleteEmployee.fulfilled, (state, action) => {
-          state.status = 'succeeded';
-          const employeeToDelete = state.employees.find(emp => emp._id === action.payload.id);
-          if (employeeToDelete) {
-            state.deletedEmployees.push(employeeToDelete);
-          }
-          state.employees = state.employees.filter(emp => emp._id !== action.payload.id);
+        const employeeId = action.payload.id;
+        const employee = state.employees.find(e => e._id === employeeId);
+        if (employee) {
+          employee.isDeleted = true;
+        }
       })
       .addCase(softDeleteEmployee.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || 'Failed to soft-delete employee.';
       })
+
   }
 });
 
 export default employeeSlice.reducer;
-export const { employeesFetched, employeeFetchError } = employeeSlice.actions;
+export const {employeesFetched, employeeFetchError} = employeeSlice.actions;
