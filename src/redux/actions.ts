@@ -99,3 +99,24 @@ export const softDeleteEmployee = createAsyncThunk(
     }
   }
 );
+
+export const getDeletedEmployees = createAsyncThunk(
+  'employees/fetchDeleted',
+  async (params: {
+    page?: number,
+    limit?: number
+  } = {}, thunkAPI) => {
+    try {
+      const response = await axios.get<{
+        employees: Employee[],
+        count: number
+      }>(ENDPOINTS.GET_DELETED_EMPLOYEES, {
+        params: params
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching deleted employees:', error);
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);

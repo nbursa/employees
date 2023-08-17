@@ -86,19 +86,14 @@ const Employees: React.FC = () => {
 
       if (isErrorPayload(action.payload)) {
         setFormErrors(action.payload);
-        setFormResult("failure");
-        return 'failure';
-        // toast.error(formType === "create" ? "Employee creation failed" : "Employee update failed");
+        return setFormResult("failure");
       } else {
         setFormErrors({});
-        setFormResult("success");
-        return 'success';
-        // toast.success(formType === "create" ? "Employee created successfully" : "Employee updated successfully");
+        return setFormResult("success");
       }
     } catch (error) {
       console.error("Error while handling the form submission:", error);
-      setFormResult("failure");
-      // toast.error("Error while handling the form submission");
+      return setFormResult("failure");
     }
   };
 

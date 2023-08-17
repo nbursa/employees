@@ -44,7 +44,8 @@ const DeleteForm: React.FC = () => {
       <h3 className="text-xl font-bold mb-2">Delete
         Employee</h3>
 
-      <FormControl className="w-full" margin="normal">
+      <FormControl className="w-full md:w-1/2"
+                   margin="normal">
         <Autocomplete
           className="mb-6"
           disablePortal

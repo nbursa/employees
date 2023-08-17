@@ -15,6 +15,7 @@ import {useSelector} from "react-redux";
 import {RootState} from "../../redux/store.ts";
 import FormControlComponent from "./FormControlComponent";
 import {toast} from "react-toastify";
+import {DatePicker} from "@mui/x-date-pickers";
 
 interface EmployeeFormProps {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -112,24 +113,6 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
     })
   };
 
-  // useEffect(() => {
-  //   if (formResult === "success") {
-  //     toast.success(
-  //       formType === "create"
-  //         ? "Employee created successfully"
-  //         : "Employee updated successfully"
-  //     );
-  //   } else if (formResult === "failure") {
-  //     const errorMessage =
-  //       formType === "create"
-  //         ? "Employee creation failed"
-  //         : "Employee update failed";
-  //
-  //     toast.error(errorMessage);
-  //   }
-  // }, [formResult, formType]);
-
-
   const toISODateString = (dateString: string) => {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
@@ -139,60 +122,60 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
   };
 
   const formFields = [
-    {
+    [{
       label: "Name",
       name: "name",
       type: "text",
       value: selectedEmployee.name
     },
-    {
-      label: "Email",
-      name: "email",
-      type: "text",
-      value: selectedEmployee.email,
-    },
-    {
-      label: "Phone Number",
-      name: "phoneNumber",
-      type: "text",
-      value: selectedEmployee.phoneNumber,
-    },
-    {
-      label: "Date of Employment",
-      name: "dateOfEmployment",
-      type: "date",
-      value: toISODateString(selectedEmployee.dateOfEmployment),
-    },
-    {
-      label: "Date of Birth",
-      name: "dateOfBirth",
-      type: "date",
-      value: toISODateString(selectedEmployee.dateOfBirth),
-    },
-    {
+      {
+        label: "Email",
+        name: "email",
+        type: "text",
+        value: selectedEmployee.email,
+      },
+      {
+        label: "Phone Number",
+        name: "phoneNumber",
+        type: "text",
+        value: selectedEmployee.phoneNumber,
+      },
+      {
+        label: "Date of Employment",
+        name: "dateOfEmployment",
+        type: "date",
+        value: toISODateString(selectedEmployee.dateOfEmployment),
+      },
+      {
+        label: "Date of Birth",
+        name: "dateOfBirth",
+        type: "date",
+        value: toISODateString(selectedEmployee.dateOfBirth),
+      }],
+    [{
       label: "City",
       name: "homeAddress.city",
       type: "text",
       value: selectedEmployee.homeAddress.city,
     },
-    {
-      label: "ZIP Code",
-      name: "homeAddress.ZIPCode",
-      type: "text",
-      value: selectedEmployee.homeAddress.ZIPCode,
-    },
-    {
-      label: "Address Line 1",
-      name: "homeAddress.addressLine1",
-      type: "text",
-      value: selectedEmployee.homeAddress.addressLine1,
-    },
-    {
-      label: "Address Line 2",
-      name: "homeAddress.addressLine2",
-      type: "text",
-      value: selectedEmployee.homeAddress.addressLine2,
-    },
+      {
+        label: "ZIP Code",
+        name: "homeAddress.ZIPCode",
+        type: "text",
+        value: selectedEmployee.homeAddress.ZIPCode,
+      },
+      {
+        label: "Address Line 1",
+        name: "homeAddress.addressLine1",
+        type: "text",
+        value: selectedEmployee.homeAddress.addressLine1,
+      },
+      {
+        label: "Address Line 2",
+        name: "homeAddress.addressLine2",
+        type: "text",
+        value: selectedEmployee.homeAddress.addressLine2,
+      }],
   ];
 
   const capitalizeFirstLetter = (word: string) => {
@@ -213,16 +196,16 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
   return (
     <form
       onSubmit={onSubmit}
-      className="py-8 flex flex-col items-baseline gap-2"
+      className="py-8 items-baseline gap-2"
     >
       <h3 className="text-xl font-bold mb-2">
         {capitalizeFirstLetter(formType)} Employee
       </h3>
 
       <FormGroup
-        className="container mx-auto flex flex-col mb-6">
+        className="container mx-auto flex gap-2 mb-6 flex-col md:flex-row">
         {formType === "update" && (
-          <FormControl className="mb-4 w-full"
+          <FormControl className="mb-4 w-full md:w-1/2"
                        margin="normal">
             <Autocomplete
               disablePortal
@@ -245,21 +228,52 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
             />
           </FormControl>
         )}
-        {formFields.map((field) => (
-          <FormControlComponent
-            key={field.name}
-            label={field.label}
-            name={field.name}
-            type={field.type}
-            value={field.value}
-            onChange={handleInputChange}
-            error={
-              errorMap(field.name, field.value)
-                ? getFieldError(field.name)
-                : null
-            }
-          />
-        ))}
+        <div
+          className="flex w-full gap-4 flex-col md:flex-row">
+          {formFields.map((fieldGroup, idx) => (
+            <div key={idx}
+                 className="flex-1 flex flex-col gap-2 w-full md:w-1/2">
+              {fieldGroup.map((field) => {
+                if (field.type === "date") {
+                  return (
+                    <FormControl
+                      key={`${field.name}-control`}
+                      margin="normal">
+                      <DatePicker
+                        label={field.label}
+                        value={field.value ? new Date(field.value) : null}
+                        onChange={(newValue) => {
+                          if (newValue) {
+                            handleInputChange({
+                              target: {
+                                name: field.name,
+                                value: newValue.toISOString(),
+                              },
+                            } as React.ChangeEvent<HTMLInputElement>);
+                          }
+                        }}
+                      />
+                    </FormControl>
+                  );
+                } else {
+                  return (
+                    <FormControlComponent
+                      key={field.name}
+                      label={field.label}
+                      name={field.name}
+                      type={field.type}
+                      value={field.value}
+                      onChange={handleInputChange}
+                      error={
+                        errorMap(field.name, field.value) ? getFieldError(field.name) : null
+                      }
+                    />
+                  );
+                }
+              })}
+            </div>
+          ))}
+        </div>
       </FormGroup>
 
       <Button type="submit" variant="contained"

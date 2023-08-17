@@ -4,7 +4,7 @@ import {
   fetchEmployees,
   softDeleteEmployee,
   fetchEmployeeById,
-  createEmployee
+  createEmployee, getDeletedEmployees
 } from './actions';
 
 type EmployeeState = {
@@ -49,7 +49,7 @@ const employeeSlice = createSlice({
       .addCase(fetchEmployees.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchEmployees.fulfilled, (state, action: PayloadAction<Employee[]>) => {
+      .addCase(fetchEmployees.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.employees = action.payload;
       })
@@ -86,7 +86,17 @@ const employeeSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message || 'Failed to soft-delete employee.';
       })
-
+      .addCase(getDeletedEmployees.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getDeletedEmployees.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.deletedEmployees = action.payload.employees;
+      })
+      .addCase(getDeletedEmployees.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || 'Failed to fetch deleted employees.';
+      })
   }
 });
 
