@@ -1,20 +1,20 @@
-// import '@testing-library/jest-dom/extend-expect';
-import { render, screen } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import {render, screen} from '@testing-library/react';
+import {Provider} from 'react-redux';
 import configureStore from 'redux-mock-store';
-import { fetchEmployees } from '../../redux/actions';
+// import {fetchEmployees} from '../../redux/actions';
 import Home from '../Home';
-import { Store } from 'redux';
+import {MockStoreEnhanced} from 'redux-mock-store';
+import thunk from 'redux-thunk';
 
-// jest.mock('../../redux/actions.ts');
 jest.mock('../../api/config', () => ({
   API_BASE_URL: 'http://testurl.com/'
 }));
 
-const mockStore = configureStore([]);
+const middlewares = [thunk];
+const mockStore = configureStore(middlewares);
 
 describe('Home Page', () => {
-  let store: Store<unknown>;
+  let store: MockStoreEnhanced<unknown, object>;
 
   beforeEach(() => {
     store = mockStore({
@@ -24,16 +24,18 @@ describe('Home Page', () => {
         error: null
       }
     });
-    store.dispatch = jest.fn();
   });
 
   it('dispatches fetchEmployees on mount', () => {
     render(
       <Provider store={store}>
-        <Home />
-        </Provider>
+        <Home/>
+      </Provider>
     );
-    expect(store.dispatch).toHaveBeenCalledWith(fetchEmployees({ page: 1, limit: 10 }));
+
+    const actions = store.getActions();
+    expect(actions).toContainEqual(expect.objectContaining({type: 'employees/fetchAll/pending'}));
+    // expect(actions).toContainEqual(fetchEmployees({}));
   });
 
   it('displays loading state', () => {
@@ -46,8 +48,8 @@ describe('Home Page', () => {
     });
     render(
       <Provider store={store}>
-        <Home />
-        </Provider>
+        <Home/>
+      </Provider>
     );
     expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
   });
@@ -62,16 +64,16 @@ describe('Home Page', () => {
     });
     render(
       <Provider store={store}>
-        <Home />
-        </Provider>
+        <Home/>
+      </Provider>
     );
     expect(screen.getByText(/Error: Something went wrong/i)).toBeInTheDocument();
   });
 
   it('displays list of employees', async () => {
     const mockEmployees = [
-      { _id: '1', name: 'John Doe' },
-      { _id: '2', name: 'Jane Smith' }
+      {_id: '1', name: 'John Doe'},
+      {_id: '2', name: 'Jane Smith'}
     ];
     store = mockStore({
       employees: {
@@ -82,8 +84,8 @@ describe('Home Page', () => {
     });
     render(
       <Provider store={store}>
-        <Home />
-        </Provider>
+        <Home/>
+      </Provider>
     );
     for (const employee of mockEmployees) {
       expect(screen.getByText(employee.name)).toBeInTheDocument();

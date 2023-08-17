@@ -1,6 +1,11 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {Employee} from '../types';
-import {fetchEmployees, softDeleteEmployee, fetchEmployeeById, createEmployee} from './actions';
+import {
+  fetchEmployees,
+  softDeleteEmployee,
+  fetchEmployeeById,
+  createEmployee
+} from './actions';
 
 type EmployeeState = {
   employees: Employee[];
@@ -70,10 +75,12 @@ const employeeSlice = createSlice({
       })
       .addCase(softDeleteEmployee.fulfilled, (state, action) => {
         const employeeId = action.payload.id;
-        const employee = state.employees.find(e => e._id === employeeId);
-        if (employee) {
-          employee.isDeleted = true;
-        }
+        state.employees = state.employees.map(emp =>
+          emp._id === employeeId ? {
+            ...emp,
+            isDeleted: true
+          } : emp
+        );
       })
       .addCase(softDeleteEmployee.rejected, (state, action) => {
         state.status = 'failed';
@@ -84,4 +91,7 @@ const employeeSlice = createSlice({
 });
 
 export default employeeSlice.reducer;
-export const {employeesFetched, employeeFetchError} = employeeSlice.actions;
+export const {
+  employeesFetched,
+  employeeFetchError
+} = employeeSlice.actions;

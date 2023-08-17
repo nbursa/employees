@@ -1,11 +1,21 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
-import {CreateEmployeeResponse, Employee, EmployeeResponse, UpdateEmployee, ValidationErrorPayload} from '../types';
+import {
+  CreateEmployee,
+  CreateEmployeeResponse,
+  Employee,
+  EmployeeResponse,
+  UpdateEmployee,
+  ValidationErrorPayload
+} from '../types';
 import {ENDPOINTS} from '../api/config.ts';
 
 export const fetchEmployees = createAsyncThunk(
   'employees/fetchAll',
-  async (params: { page?: number, limit?: number } = {}, thunkAPI) => {
+  async (params: {
+    page?: number,
+    limit?: number
+  } = {}, thunkAPI) => {
     try {
       const response = await axios.get<EmployeeResponse>(ENDPOINTS.GET_EMPLOYEES, {
         params: params
@@ -33,7 +43,7 @@ export const fetchEmployeeById = createAsyncThunk(
 
 export const createEmployee = createAsyncThunk(
   'employees/create',
-  async (employeeData: Employee, thunkAPI) => {
+  async (employeeData: CreateEmployee, thunkAPI) => {
     try {
       const response = await axios.post<CreateEmployeeResponse>(ENDPOINTS.CREATE_EMPLOYEE, employeeData);
       return response.data;
@@ -62,7 +72,11 @@ export const createEmployee = createAsyncThunk(
 
 export const updateEmployee = createAsyncThunk(
   'employees/update',
-  async (updateData: { id: string; name?: string; email?: string }, thunkAPI) => {
+  async (updateData: {
+    id: string;
+    name?: string;
+    email?: string
+  }, thunkAPI) => {
     try {
       const response = await axios.patch<UpdateEmployee>(ENDPOINTS.UPDATE_EMPLOYEE(updateData.id), updateData);
       return response.data;

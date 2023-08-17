@@ -1,18 +1,21 @@
 import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {Tabs, Tab, Box} from '@mui/material';
-import {AppDispatch, RootState} from '../redux/store';
-import {fetchEmployees, createEmployee, updateEmployee} from '../redux/actions';
+import {AppDispatch} from '../redux/store';
+import {
+  fetchEmployees,
+  createEmployee,
+  updateEmployee
+} from '../redux/actions';
 import {
   CreateEmployee,
   Employee,
-  EmployeeAction,
   HomeAddress,
   ValidationErrorPayload
 } from "../types";
-import EmployeeForm from "../components/form/EmployeeForm.tsx";
+import EmployeeForm
+  from "../components/form/EmployeeForm.tsx";
 import DeleteForm from "../components/form/DeleteForm.tsx";
-import NoResults from "../components/NoResults.tsx";
 
 const Employees: React.FC = () => {
   const defaultNewEmployee: CreateEmployee = {
@@ -33,10 +36,9 @@ const Employees: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0);
-  const error = useSelector((state: RootState) => state.employees?.error, (error): error is string | undefined => typeof error === 'string' || error === null);
-  const employees = useSelector((state: RootState) => state.employees?.employees);
   const [formEmployee, setFormEmployee] = useState<CreateEmployee>(defaultNewEmployee);
   const [formErrors, setFormErrors] = useState<ValidationErrorPayload>({});
+  const [formResult, setFormResult] = useState<'failure' | 'success' | null>(null);
 
   useEffect(() => {
     dispatch(fetchEmployees({}));
@@ -68,55 +70,51 @@ const Employees: React.FC = () => {
   }
 
   const isErrorPayload = (payload: unknown): payload is ValidationErrorPayload => {
-    return typeof payload === 'object' && payload !== null && !Array.isArray(payload);
+    return (payload && (payload as ValidationErrorPayload).errorMessage !== undefined) as boolean;
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    let currentAction: Promise<ReturnType<typeof createEmployee.fulfilled> | ReturnType<typeof createEmployee.rejected> | ReturnType<typeof updateEmployee.fulfilled> | ReturnType<typeof updateEmployee.rejected>>;
+    try {
+      let action;
+      if (selectedEmployeeId) {
+        action = await dispatch(updateEmployee({id: selectedEmployeeId, ...formEmployee}));
+      } else {
+        action = await dispatch(createEmployee(formEmployee as CreateEmployee));
+      }
 
-    console.log('handleFormSubmit newEmployee', formEmployee);
-    if (selectedEmployeeId) {
-      currentAction = dispatch(updateEmployee({id: selectedEmployeeId, ...formEmployee}));
-    } else {
-      currentAction = dispatch(createEmployee(formEmployee as Employee));
-    }
-
-    currentAction.then((action: EmployeeAction) => {
       if (isErrorPayload(action.payload)) {
         setFormErrors(action.payload);
+        setFormResult("failure");
+        return 'failure';
+        // toast.error(formType === "create" ? "Employee creation failed" : "Employee update failed");
       } else {
-        alert('Employee crated successfuly!');
+        setFormErrors({});
+        setFormResult("success");
+        return 'success';
+        // toast.success(formType === "create" ? "Employee created successfully" : "Employee updated successfully");
       }
-    }).catch(error => {
-      console.error('This should not typically be reached with Redux Toolkit AsyncThunks, but handle just in case:', error);
-    });
-
+    } catch (error) {
+      console.error("Error while handling the form submission:", error);
+      setFormResult("failure");
+      // toast.error("Error while handling the form submission");
+    }
   };
 
 
   return (
     <div className="container mx-auto px-4">
-      <h3 className="text-xl font-bold mb-2">Employees Form</h3>
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-          <strong className="font-bold">Error:</strong>
-          <pre className="block sm:inline"> {error}</pre>
-        </div>
-      )}
-
-      {employees && employees.length === 0 && (
-        <NoResults/>
-      )}
+      <h3 className="text-xl font-bold my-2">Manage
+        Employees</h3>
 
       <Tabs value={activeTab} onChange={handleChangeTab}>
-        <Tab label="Create Employee"/>
-        <Tab label="Update Employee"/>
-        <Tab label="Delete Employee"/>
+        <Tab label="Create"/>
+        <Tab label="Update"/>
+        <Tab label="Delete"/>
       </Tabs>
 
-      <Box hidden={activeTab !== 0} padding={3}>
+      <Box hidden={activeTab !== 0}>
         <EmployeeForm
           formType="create"
           handleInputChange={handleInputChange}
@@ -127,10 +125,11 @@ const Employees: React.FC = () => {
           selectedEmployee={formEmployee}
           setFormEmployee={setFormEmployee}
           formErrors={formErrors as ValidationErrorPayload}
+          formResult={formResult}
         />
       </Box>
 
-      <Box hidden={activeTab !== 1} padding={3}>
+      <Box hidden={activeTab !== 1}>
         <EmployeeForm
           formType="update"
           handleInputChange={handleInputChange}
@@ -140,11 +139,12 @@ const Employees: React.FC = () => {
           selectedEmployee={formEmployee}
           setFormEmployee={setFormEmployee}
           formErrors={formErrors as ValidationErrorPayload}
+          formResult={formResult}
         />
 
       </Box>
 
-      <Box hidden={activeTab !== 2} padding={3}>
+      <Box hidden={activeTab !== 2}>
         <DeleteForm/>
       </Box>
     </div>

@@ -9,7 +9,6 @@ import NoResults from "../components/NoResults.tsx";
 const Home: React.FC = () => {
   const employees = useSelector((state: RootState) => state.employees?.employees);
   const loading = useSelector((state: RootState) => state.employees?.status === 'loading');
-  // const error = useSelector((state: RootState) => state.employees?.error);
   const dispatch = useDispatch<AppDispatch>();
   const error = useSelector((state: RootState) => typeof state.employees?.error === 'string' ? state.employees?.error : undefined);
 
