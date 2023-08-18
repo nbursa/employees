@@ -1,9 +1,8 @@
 import React from 'react';
 import {FormControl, FormHelperText} from "@mui/material";
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
-import {
-  useEmployeeForm
-} from "../../../contexts/EmployeeFormContext.tsx";
+import useEmployeeForm
+  from '../../../hooks/useEmployeeForm.tsx';
 
 interface EmployeeDatePickerProps {
   label: string;
@@ -19,8 +18,8 @@ const FormDatePicker: React.FC<EmployeeDatePickerProps> = ({
     formValues,
     formErrors
   } = useEmployeeForm();
-  const fieldValue = formValues[name] ? new Date(formValues[name]) : null;
-  console.log('fieldValue', fieldValue)
+  const fieldValue = formValues && formValues[name] ? new Date(formValues[name]) : null;
+  // console.log('fieldValue', fieldValue)
   const fieldError = formErrors[name] || '';
 
   return (

@@ -1,21 +1,16 @@
-import React from 'react';
+import useEmployeeForm
+  from "../../../hooks/useEmployeeForm.tsx";
 import {
-  FormControl,
+  capitalizeFirstLetter,
+  getValueByPath
+} from "../utils/helpers.ts";
+import {useEffect} from "react";
+import {
+  FormControl, FormHelperText,
   Input,
-  InputLabel,
-  FormHelperText
-} from '@mui/material';
-import {CreateEmployee, Employee} from "../../../types";
-import {capitalizeFirstLetter} from "../utils/helpers.ts";
-import {
-  useEmployeeForm
-} from '../../../contexts/EmployeeFormContext';
-
-interface FormControlProps {
-  label: string;
-  name: keyof CreateEmployee | keyof Employee | string;
-  type?: string;
-}
+  InputLabel
+} from "@mui/material";
+import {errorMap} from "../utils/validations.ts";
 
 const FormField: React.FC<FormControlProps> = ({
                                                  label,
@@ -25,10 +20,39 @@ const FormField: React.FC<FormControlProps> = ({
   const {
     handleInputChange,
     formErrors,
+    setFormErrors,
     formValues
   } = useEmployeeForm();
-  const value = formValues[name as keyof CreateEmployee] || '';
+
+  const value = formValues && getValueByPath(formValues, String(name)) || '';
   const fieldError = capitalizeFirstLetter(formErrors[String(name)] || '');
+
+  const handleValidation = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange(e);
+
+    const errorExists = errorMap(e.target.name, e.target.value);
+    const errorMessage = errorExists ? formErrors[e.target.name] : null;
+    const keys = e.target.name.split('.');
+    if (keys.length === 1) {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        [e.target.name]: errorMessage
+      }));
+    } else if (keys.length === 2) {
+      const [key, nestedKey] = keys;
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        [key]: {
+          ...prevErrors[key],
+          [nestedKey]: errorMessage || null
+        }
+      }));
+    }
+  };
+
+  // useEffect(() => {
+  //   handleValidation(name, value);
+  // }, [value]);
 
   return (
     <FormControl margin="normal">
@@ -39,7 +63,7 @@ const FormField: React.FC<FormControlProps> = ({
         name={String(name)}
         type={type}
         value={value}
-        onChange={handleInputChange}
+        onChange={handleValidation}
       />
       {fieldError ? <FormHelperText
         error>{fieldError}</FormHelperText> : null}

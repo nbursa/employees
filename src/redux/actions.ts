@@ -78,7 +78,7 @@ export const createEmployee = createAsyncThunk(
       return response.data;
 
     } catch (error: any) {
-      console.error('Error while creating employee:', error);
+      // console.error('Error while creating employee:', error);
 
       // Check if the error has a specific format returned from the backend
       if (error.response && error.response.data && Array.isArray(error.response.data.message)) {
@@ -90,7 +90,7 @@ export const createEmployee = createAsyncThunk(
           const field = errorMsg.substring(0, spaceIndex)
           errors[field] = errorMsg.substring(spaceIndex + 1);
         });
-        console.log('thunkAPI errors', errors);
+        // console.log('thunkAPI errors', errors);
         return thunkAPI.rejectWithValue(errors);
       }
 

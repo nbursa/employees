@@ -16,6 +16,20 @@ export const defaultNewEmployee: CreateEmployee = {
   deletedAt: null,
 };
 
+export const initialFormValues = {
+  name: "",
+  email: "",
+  phoneNumber: "",
+  dateOfEmployment: new Date().toISOString().substring(0, 10),
+  dateOfBirth: new Date().toISOString().substring(0, 10),
+  homeAddress: {
+    city: "",
+    ZIPCode: "",
+    addressLine1: "",
+    addressLine2: "",
+  },
+};
+
 export const formFields: FieldType[][] = [
   [{
     label: "Name",
