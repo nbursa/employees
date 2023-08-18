@@ -8,11 +8,6 @@ export const isValidPhoneNumber = (phoneNumber: string): boolean => {
   return phoneNumberRegex.test(phoneNumber);
 };
 
-// export const isValidDateTime = (dateTime: string): boolean => {
-//   const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/;
-//   return dateTimeRegex.test(dateTime);
-// };
-
 export const isValidName = (name: string): boolean => {
   return name.length >= 2;
 };

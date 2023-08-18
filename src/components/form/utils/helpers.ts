@@ -10,17 +10,6 @@ export const capitalizeFirstLetter = (word: string): string => {
   return word && word.charAt(0).toUpperCase() + word.slice(1);
 };
 
-// export const getValueByPath = (obj: any, path: string): any => {
-//   return path.split('.').reduce((acc, part) => acc && acc[part], obj);
-// }
-
-// export const setValueByPath = (obj: any, path: string, value: any): void => {
-//   const parts = path.split('.');
-//   const lastPart = parts.pop();
-//   const target = parts.reduce((acc, part) => acc[part] = acc[part] || {}, obj);
-//   target[lastPart] = value;
-// }
-
 export const getValueByPath = (obj: any, path: string): any => {
   return path.split('.').reduce((acc, part) => {
     if (acc === null || acc === undefined) {

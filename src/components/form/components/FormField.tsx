@@ -4,7 +4,6 @@ import {
   capitalizeFirstLetter,
   getValueByPath
 } from "../utils/helpers.ts";
-import {useEffect} from "react";
 import {
   FormControl, FormHelperText,
   Input,
@@ -49,10 +48,6 @@ const FormField: React.FC<FormControlProps> = ({
       }));
     }
   };
-
-  // useEffect(() => {
-  //   handleValidation(name, value);
-  // }, [value]);
 
   return (
     <FormControl margin="normal">
