@@ -13,9 +13,15 @@ import {
   HomeAddress,
   ValidationErrorPayload
 } from "../types";
-import EmployeeForm
-  from "../components/form/EmployeeForm.tsx";
+// import EmployeeForm
+//   from "../components/form/EmployeeForm.tsx";
 import DeleteForm from "../components/form/DeleteForm.tsx";
+import NewEmployeeForm
+  from "../components/form/NewEmployeeForm.tsx";
+import {toast} from "react-toastify";
+import {
+  EmployeeFormProvider
+} from '../contexts/EmployeeFormContext';
 
 const Employees: React.FC = () => {
   const defaultNewEmployee: CreateEmployee = {
@@ -69,33 +75,94 @@ const Employees: React.FC = () => {
     }
   }
 
-  const isErrorPayload = (payload: unknown): payload is ValidationErrorPayload => {
-    return (payload && (payload as ValidationErrorPayload).errorMessage !== undefined) as boolean;
-  };
+  // const isErrorPayload = (payload: unknown): payload is ValidationErrorPayload => {
+  //   return (payload && (payload as ValidationErrorPayload).errorMessage !== undefined) as boolean;
+  // };
+
+  // const handleFormSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //
+  //   try {
+  //     let action;
+  //     if (selectedEmployeeId) {
+  //       action = await dispatch(updateEmployee({id: selectedEmployeeId, ...formEmployee}));
+  //     } else {
+  //       action = await dispatch(createEmployee(formEmployee as CreateEmployee));
+  //     }
+  //
+  //     if (isErrorPayload(action.payload)) {
+  //       setFormErrors(action.payload);
+  //       return setFormResult("failure");
+  //     } else {
+  //       setFormErrors({});
+  //       return setFormResult("success");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error while handling the form submission:", error);
+  //     return setFormResult("failure");
+  //   }
+  // };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      let action;
-      if (selectedEmployeeId) {
-        action = await dispatch(updateEmployee({id: selectedEmployeeId, ...formEmployee}));
-      } else {
-        action = await dispatch(createEmployee(formEmployee as CreateEmployee));
-      }
+    let action;
+    if (selectedEmployeeId) {
+      action = await dispatch(updateEmployee({id: selectedEmployeeId, ...formEmployee}));
+    } else {
+      action = await dispatch(createEmployee(formEmployee as CreateEmployee));
+    }
 
-      if (isErrorPayload(action.payload)) {
-        setFormErrors(action.payload);
-        return setFormResult("failure");
+    if (createEmployee.fulfilled.match(action) || updateEmployee.fulfilled.match(action)) {
+      setFormErrors({});
+      setFormResult("success");
+      toast.success("Operation successful!");
+    } else if (createEmployee.rejected.match(action) || updateEmployee.rejected.match(action)) {
+      if (action.payload && typeof action.payload === 'object') {
+        return setFormErrors(action.payload);
+        // Displaying validation errors
+        // for (const key in action.payload) {
+        //   toast.error(`${key}: ${action.payload[key]}`);
+        // }
       } else {
-        setFormErrors({});
-        return setFormResult("success");
+        console.error("Error while handling the form submission:", action.error);
+        toast.error(`Error while handling the form submission: ${action.error.message}`);
       }
-    } catch (error) {
-      console.error("Error while handling the form submission:", error);
-      return setFormResult("failure");
+      setFormResult("failure");
     }
   };
+
+  // const handleFormSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //
+  //   let action;
+  //   if (selectedEmployeeId) {
+  //     action = await dispatch(updateEmployee({id: selectedEmployeeId, ...formEmployee}));
+  //   } else {
+  //     action = await dispatch(createEmployee(formEmployee as CreateEmployee));
+  //     console.log("action", action);
+  //   }
+  //
+  //   if (createEmployee.fulfilled.match(action) || updateEmployee.fulfilled.match(action)) {
+  //     setFormErrors({});
+  //     setFormResult("success");
+  //     toast.success("Operation successful!");
+  //   } else if (createEmployee.rejected.match(action) || updateEmployee.rejected.match(action)) {
+  //     // setFormErrors(action.payload);
+  //     if (isErrorPayload(action.payload)) {
+  //       console.log('action.payload', action.payload)
+  //       setFormErrors(action.payload);
+  //       // Displaying validation errors
+  //       for (const key in action.payload) {
+  //         toast.error(`${key}: ${action.payload[key]}`);
+  //       }
+  //     } else {
+  //       console.error("Error while handling the form submission:", action.error);
+  //       toast.error(`Error while handling the form submission: ${action.error.message}`);
+  //     }
+  //     setFormResult("failure");
+  //   }
+  // };
 
 
   return (
@@ -109,41 +176,25 @@ const Employees: React.FC = () => {
         <Tab label="Delete"/>
       </Tabs>
 
-      <Box hidden={activeTab !== 0}>
-        <EmployeeForm
-          formType="create"
-          handleInputChange={handleInputChange}
-          handleFormSubmit={handleFormSubmit}
-          selectedEmployeeId={null}
-          setSelectedEmployeeId={() => {
-          }}
-          selectedEmployee={formEmployee}
-          setFormEmployee={setFormEmployee}
-          formErrors={formErrors as ValidationErrorPayload}
-          formResult={formResult}
-        />
-      </Box>
+      <EmployeeFormProvider value={{
+        handleInputChange,
+        formErrors, /* other values */
+      }}>
+        <Box hidden={activeTab !== 0}>
+          <NewEmployeeForm formType="create"/>
+        </Box>
 
-      <Box hidden={activeTab !== 1}>
-        <EmployeeForm
-          formType="update"
-          handleInputChange={handleInputChange}
-          handleFormSubmit={handleFormSubmit}
-          selectedEmployeeId={selectedEmployeeId}
-          setSelectedEmployeeId={setSelectedEmployeeId}
-          selectedEmployee={formEmployee}
-          setFormEmployee={setFormEmployee}
-          formErrors={formErrors as ValidationErrorPayload}
-          formResult={formResult}
-        />
+        <Box hidden={activeTab !== 1}>
+          <NewEmployeeForm formType="update"/>
+        </Box>
 
-      </Box>
-
-      <Box hidden={activeTab !== 2}>
-        <DeleteForm/>
-      </Box>
+        <Box hidden={activeTab !== 2}>
+          <DeleteForm/>
+        </Box>
+      </EmployeeFormProvider>
     </div>
   );
+
 
 };
 

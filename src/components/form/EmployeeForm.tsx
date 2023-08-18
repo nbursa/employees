@@ -13,7 +13,8 @@ import {
 } from "../../types";
 import {useSelector} from "react-redux";
 import {RootState} from "../../redux/store.ts";
-import FormControlComponent from "./FormControlComponent";
+import FormField
+  from "./components/FormField.tsx";
 import {toast} from "react-toastify";
 import {DatePicker} from "@mui/x-date-pickers";
 
@@ -64,6 +65,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
     return formErrors[fieldName] || null;
   };
 
+  // Regex patterns for validating certain fields. Could be moved to a separate file
   const errorMap = (fieldName: string, fieldValue: string): boolean => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     const phoneNumberRegex = /^\+\d{11,12}$/;
@@ -94,7 +96,8 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await handleFormSubmit(e).then(() => {
+    await handleFormSubmit(e).then((result) => {
+      console.log('res', result)
       if (formResult === "success") {
         setSelectedEmployeeId(null);
         toast.success(
@@ -121,6 +124,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
     return date.toISOString();
   };
 
+  // Fields are grouped to allow two column form layout and sorted by approx relation
   const formFields = [
     [{
       label: "Name",
@@ -241,7 +245,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
                       margin="normal">
                       <DatePicker
                         label={field.label}
-                        value={field.value ? new Date(field.value) : null}
+                        value={new Date(field.value) || null}
                         onChange={(newValue) => {
                           if (newValue) {
                             handleInputChange({
@@ -257,7 +261,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
                   );
                 } else {
                   return (
-                    <FormControlComponent
+                    <FormField
                       key={field.name}
                       label={field.label}
                       name={field.name}

@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {Employee} from '../types';
+import {Employee, EmployeeState} from '../types';
 import {
   fetchEmployees,
   softDeleteEmployee,
@@ -7,18 +7,16 @@ import {
   createEmployee, getDeletedEmployees
 } from './actions';
 
-type EmployeeState = {
-  employees: Employee[];
-  deletedEmployees: Employee[];
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
-  error: string | undefined;
-};
 
 const initialState: EmployeeState = {
   employees: [],
   deletedEmployees: [],
   status: 'idle',
-  error: undefined
+  errors: {
+    name: '',
+    message: '',
+    payload: {}
+  }
 };
 
 const employeeSlice = createSlice({
@@ -37,6 +35,11 @@ const employeeSlice = createSlice({
     builder
       .addCase(createEmployee.pending, (state) => {
         state.status = 'loading';
+        state.errors = {
+          name: '',
+          message: '',
+          payload: {}
+        };
       })
       .addCase(createEmployee.fulfilled, (state, action) => {
         state.status = 'succeeded';
@@ -44,7 +47,9 @@ const employeeSlice = createSlice({
       })
       .addCase(createEmployee.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload as string || 'Failed to create employee.';
+        state.errors.name = 'Create Employee Error';
+        state.errors.message = action.error.message || 'Failed to create employee.';
+        state.errors.payload = action.payload || {};
       })
       .addCase(fetchEmployees.pending, (state) => {
         state.status = 'loading';
@@ -55,6 +60,7 @@ const employeeSlice = createSlice({
       })
       .addCase(fetchEmployees.rejected, (state, action) => {
         state.status = 'failed';
+        console.log('fetchEmployees.rejected', action || 'Failed to fetch employees.')
         state.error = action.error.message || 'Failed to fetch employees.';
         console.log('fetchEmployees.rejected', action.error.message || 'Failed to fetch employees.')
       })

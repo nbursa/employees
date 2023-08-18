@@ -41,6 +41,35 @@ export const fetchEmployeeById = createAsyncThunk(
   }
 );
 
+// export const createEmployee = createAsyncThunk(
+//   'employees/create',
+//   async (employeeData: CreateEmployee, thunkAPI) => {
+//     try {
+//       const response = await axios.post<CreateEmployeeResponse>(ENDPOINTS.CREATE_EMPLOYEE, employeeData);
+//       return response.data;
+//
+//     } catch (error: any) {
+//       console.error('Error while creating employee:', error);
+//       // Handle specific error format returned from the backend
+//       if (error.response && error.response.data && Array.isArray(error.response.data.message)) {
+//         // Parsing field-specific error messages
+//         const errorMessages = error.response.data.message;
+//         const errors: ValidationErrorPayload = {};
+//         errorMessages.forEach((errorMsg: string) => {
+//           const spaceIndex = errorMsg.indexOf(' ');
+//           const field = errorMsg.substring(0, spaceIndex)
+//           errors[field] = errorMsg.substring(spaceIndex + 1);
+//         });
+//         console.log('thunkAPI errors', errors);
+//         return errors;
+//       }
+//
+//       // Generic error handling
+//       return thunkAPI.rejectWithValue(error.message || 'Unexpected error occurred.');
+//     }
+//   }
+// );
+
 export const createEmployee = createAsyncThunk(
   'employees/create',
   async (employeeData: CreateEmployee, thunkAPI) => {
@@ -51,7 +80,9 @@ export const createEmployee = createAsyncThunk(
     } catch (error: any) {
       console.error('Error while creating employee:', error);
 
+      // Check if the error has a specific format returned from the backend
       if (error.response && error.response.data && Array.isArray(error.response.data.message)) {
+        // Parsing field-specific error messages
         const errorMessages = error.response.data.message;
         const errors: ValidationErrorPayload = {};
         errorMessages.forEach((errorMsg: string) => {
@@ -60,11 +91,11 @@ export const createEmployee = createAsyncThunk(
           errors[field] = errorMsg.substring(spaceIndex + 1);
         });
         console.log('thunkAPI errors', errors);
-        return errors;
+        return thunkAPI.rejectWithValue(errors);
       }
 
-      // For other errors, return a generic error message
-      return thunkAPI.rejectWithValue(error.message || 'Unexpected error occurred.');
+      // Generic error handling
+      return thunkAPI.rejectWithValue('Unexpected error occurred.');
     }
   }
 );
