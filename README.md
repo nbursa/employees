@@ -1,4 +1,4 @@
-# My React App with Vite
+# React, Typescript, Redux, App with Vite
 
 This application is initialized with the Vite build tool,
 leveraging React and TypeScript. It provides a minimal setup
