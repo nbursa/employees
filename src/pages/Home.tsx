@@ -18,6 +18,7 @@ const Home: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = useSelector((state: RootState) => state.employees?.totalPages || 1);
   const navigate = useNavigate();
+
   const {
     setSelectedEmployeeId,
   } = useEmployeeForm();
@@ -34,12 +35,12 @@ const Home: React.FC = () => {
   useEffect(() => {
     dispatch(fetchEmployees({
       page: currentPage,
-      limit: 10
+      limit: 2
     }));
   }, [dispatch, currentPage]);
 
   useEffect(() => {
-    dispatch(fetchEmployees({page: 1, limit: 10}));
+    dispatch(fetchEmployees({page: 1, limit: 2}));
   }, [dispatch]);
 
   return (
@@ -60,7 +61,7 @@ const Home: React.FC = () => {
           />
         ))}
       </div>
-      {!!employees.length && <Pagination
+      {!!employees?.length && <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={handlePageChange}

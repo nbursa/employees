@@ -32,16 +32,16 @@ const Pagination: React.FC<PaginationProps> = ({
         label="Prev"
         onClick={handlePrevious}
         disabled={currentPage === 1}
-        sx={(theme) => ({
-          mx: 2,
-          backgroundColor: theme.palette.grey[200],
+        sx={{
+          mr: 2,
+          backgroundColor: theme => theme.palette.grey[200],
+          padding: '.75rem 1.25rem',
+          color: theme => theme.palette.grey[700],
           '&:hover': {
-            backgroundColor: theme.palette.grey[300],
-          }
-        })}
-      >
-        Previous
-      </CustomButton>
+            backgroundColor: theme => theme.palette.grey[300],
+          },
+        }}
+      />
       <Typography>
         Page {currentPage} of {totalPages}
       </Typography>
@@ -49,16 +49,16 @@ const Pagination: React.FC<PaginationProps> = ({
         label="Next"
         onClick={handleNext}
         disabled={currentPage === totalPages}
-        sx={(theme) => ({
-          mx: 2,
-          backgroundColor: theme.palette.grey[200],
+        sx={{
+          ml: 2,
+          backgroundColor: theme => theme.palette.grey[200],
+          padding: '.75rem 1.25rem',
+          color: theme => theme.palette.grey[700],
           '&:hover': {
-            backgroundColor: theme.palette.grey[300],
-          }
-        })}
-      >
-        Next
-      </CustomButton>
+            backgroundColor: theme => theme.palette.grey[300],
+          },
+        }}
+      />
     </div>
   );
 };

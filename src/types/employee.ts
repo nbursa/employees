@@ -8,7 +8,12 @@ export type EmployeeState = {
   employees: Employee[];
   deletedEmployees: Employee[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
-  error: string | undefined;
+  errors: {
+    name: string;
+    message: string;
+    payload: ValidationErrorPayload;
+  };
+  totalPages: number;
 };
 
 

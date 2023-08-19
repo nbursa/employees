@@ -12,6 +12,8 @@ const initialState: EmployeeState = {
   employees: [],
   deletedEmployees: [],
   status: 'idle',
+  totalPages: 0,
+  limit: 10,
   errors: {
     name: '',
     message: '',
@@ -30,6 +32,9 @@ const employeeSlice = createSlice({
     employeeFetchError(state, action: PayloadAction<string>) {
       state.error = action.payload;
     },
+    setLimit(state, action: PayloadAction<number>) {
+      state.limit = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -55,8 +60,16 @@ const employeeSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(fetchEmployees.fulfilled, (state, action) => {
+        console.log("Payload count:", action.payload.count);
+        console.log("State limit:", state.limit);
+
         state.status = 'succeeded';
-        state.employees = action.payload;
+        state.employees = action.payload.employees;
+        state.totalCount = action.payload.count;
+        state.limit = action.meta.arg.limit;
+        state.totalPages = Math.ceil(action.payload.count / state.limit);
+
+        console.log("Calculated totalPages:", state.totalPages);
       })
       .addCase(fetchEmployees.rejected, (state, action) => {
         state.status = 'failed';

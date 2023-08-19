@@ -19,7 +19,7 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
       onClick={onSelect ? () => onSelect(employee._id) : null}
     >
       <h3
-        className="text-xl font-bold mb-2">{order && `${order}. `}{employee.name}</h3>
+        className="text-xl font-bold mb-2">{employee.name}</h3>
       <p
         className="text-gray-600">Email: {employee.email}</p>
       <p

@@ -12,21 +12,39 @@ import {ENDPOINTS} from '../api/config.ts';
 
 export const fetchEmployees = createAsyncThunk(
   'employees/fetchAll',
-  async (params: {
-    page?: number,
-    limit?: number
-  } = {page: 1, limit: 10}, thunkAPI) => {
+  async (params, thunkAPI) => {
+    // const state = thunkAPI.getState() as RootState;
+    const {page, limit} = params
+    console.log('fetchEmployees', {page, limit});
     try {
       const response = await axios.get<EmployeeResponse>(ENDPOINTS.GET_EMPLOYEES, {
-        params: params
+        params
       });
-      return response.data.employees;
+      return response.data;
     } catch (error) {
       console.error('Error fetching employees:', error);
       return thunkAPI.rejectWithValue(error);
     }
   }
 );
+
+// export const fetchEmployees = createAsyncThunk(
+//   'employees/fetchAll',
+//   async (params: {
+//     page?: number,
+//     limit?: number
+//   } = {page: 1, limit: 10}, thunkAPI) => {
+//     try {
+//       const response = await axios.get<EmployeeResponse>(ENDPOINTS.GET_EMPLOYEES, {
+//         params: params
+//       });
+//       return response.data;
+//     } catch (error) {
+//       console.error('Error fetching employees:', error);
+//       return thunkAPI.rejectWithValue(error);
+//     }
+//   }
+// );
 
 export const fetchEmployeeById = createAsyncThunk(
   'employees/fetchById',
