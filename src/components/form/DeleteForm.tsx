@@ -10,8 +10,10 @@ import {Employee} from "../../types";
 import {softDeleteEmployee} from "../../redux/actions";
 import {RootState, AppDispatch} from "../../redux/store";
 import {toast} from "react-toastify";
+import {useTheme} from "@mui/material/styles";
 
 const DeleteForm: React.FC = () => {
+  const theme = useTheme();
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(
     null
   );
@@ -68,9 +70,14 @@ const DeleteForm: React.FC = () => {
       </FormControl>
       <Button
         type="submit"
-        variant="contained"
-        color="secondary"
-        className="bg-red-500 hover:bg-red-600 text-white"
+        sx={{
+          backgroundColor: `${theme.palette.grey[200]}`,
+          padding: '.75rem 1.25rem',
+          color: `${theme.palette.grey[700]}`,
+          '&:hover': {
+            backgroundColor: `${theme.palette.grey[300]}`,
+          },
+        }}
       >
         Soft Delete Employee
       </Button>

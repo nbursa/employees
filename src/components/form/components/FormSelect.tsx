@@ -1,11 +1,9 @@
 import React from 'react';
 import {
   Autocomplete,
-  FormHelperText,
   TextField
 } from "@mui/material";
 import {Employee} from "../../../types";
-import {useSelector} from "react-redux";
 
 interface EmployeeAutocompleteProps {
   employees: Employee[];

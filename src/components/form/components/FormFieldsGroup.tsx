@@ -8,10 +8,11 @@ import {formFields} from "../utils/constants.ts";
 
 const FormFieldsGroup: React.FC = () => {
   return (
-    <div className="flex flex-wrap gap-2 w-full">
+    <div
+      className="flex flex-col md:flex-row gap-2 md:gap-x-6 w-full">
       {formFields.map((fieldGroup, idx) => (
         <div key={idx}
-             className="flex-1 flex flex-col gap-2 w-full md:w-1/2">
+             className="flex-1 flex flex-col gap-2 w-full">
           {fieldGroup.map((field: FieldType) => {
             if (field.type === "date") {
               return (

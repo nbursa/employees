@@ -17,7 +17,7 @@ import {
   defaultNewEmployee
 } from "../components/form/utils/constants.ts";
 import {
-  createEmployee,
+  createEmployee, fetchEmployees,
   updateEmployee
 } from "../redux/actions.ts";
 import {HomeAddress} from "../types";
@@ -70,6 +70,9 @@ export const EmployeeFormProvider: React.FC<{
       setFormErrors({});
       setFormResult("success");
       toast.success("Operation successful!");
+      setSelectedEmployeeId(null);
+      setFormValues(initialFormValues);
+      dispatch(fetchEmployees({}));
     } else if (createEmployee.rejected.match(action) || updateEmployee.rejected.match(action)) {
       if (action.payload && typeof action.payload === 'object') {
         setFormErrors(action.payload);
@@ -140,8 +143,10 @@ export const EmployeeFormProvider: React.FC<{
     if (selectedEmployeeId) {
       const foundEmployee = employees.find(emp => emp._id === selectedEmployeeId);
       setSelectedEmployee(foundEmployee || defaultNewEmployee);
+      setFormValues(foundEmployee);
     } else {
       setSelectedEmployee(defaultNewEmployee);
+      setFormValues(initialFormValues);
     }
   }, [selectedEmployeeId, employees]);
 
