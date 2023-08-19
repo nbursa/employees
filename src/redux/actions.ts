@@ -15,7 +15,7 @@ export const fetchEmployees = createAsyncThunk(
   async (params: {
     page?: number,
     limit?: number
-  } = {}, thunkAPI) => {
+  } = {page: 1, limit: 10}, thunkAPI) => {
     try {
       const response = await axios.get<EmployeeResponse>(ENDPOINTS.GET_EMPLOYEES, {
         params: params
@@ -136,7 +136,7 @@ export const getDeletedEmployees = createAsyncThunk(
   async (params: {
     page?: number,
     limit?: number
-  } = {}, thunkAPI) => {
+  } = {page: 1, limit: 10}, thunkAPI) => {
     try {
       const response = await axios.get<{
         employees: Employee[],
