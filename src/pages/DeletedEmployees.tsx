@@ -21,7 +21,7 @@ const DeletedEmployees: React.FC = () => {
   return (
     <div
       className='flex flex-col justify-center items-center'>
-      <h3 className="text-xl font-bold mb-2">Deleted
+      <h3 className="text-xl font-bold my-6">Deleted
         Employees</h3>
       <ul>
         {!!deletedEmployees.length && deletedEmployees.map(employee => (

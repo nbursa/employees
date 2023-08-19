@@ -37,7 +37,7 @@ const Employees: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4">
-      <h3 className="text-xl font-bold my-2">Manage
+      <h3 className="text-xl font-bold my-6">Manage
         Employees</h3>
 
       <Tabs
@@ -55,23 +55,19 @@ const Employees: React.FC = () => {
         <StyledTab label="Delete"/>
       </Tabs>
 
-      <EmployeeFormProvider>
-        <Box hidden={activeTab !== 0}>
-          <EmployeeForm formType="create"/>
-        </Box>
+      <Box hidden={activeTab !== 0}>
+        <EmployeeForm formType="create"/>
+      </Box>
 
-        <Box hidden={activeTab !== 1}>
-          <EmployeeForm formType="update"/>
-        </Box>
+      <Box hidden={activeTab !== 1}>
+        <EmployeeForm formType="update"/>
+      </Box>
 
-        <Box hidden={activeTab !== 2}>
-          <DeleteForm/>
-        </Box>
-      </EmployeeFormProvider>
-
+      <Box hidden={activeTab !== 2}>
+        <DeleteForm/>
+      </Box>
     </div>
   );
-
 
 };
 

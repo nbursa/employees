@@ -13,6 +13,8 @@ import {
 } from '@mui/x-date-pickers/AdapterDateFns';
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {ToastContainer} from 'react-toastify';
+import EmployeeFormProvider
+  from "./contexts/EmployeeFormContext.tsx";
 
 const router = createBrowserRouter(routes);
 
@@ -23,7 +25,9 @@ const App: React.FC = () => {
       <Provider store={store}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Navigation/>
-          <RouterProvider router={router}/>
+          <EmployeeFormProvider>
+            <RouterProvider router={router}/>
+          </EmployeeFormProvider>
           <ToastContainer/>
         </LocalizationProvider>
       </Provider>
