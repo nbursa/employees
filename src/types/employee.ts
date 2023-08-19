@@ -16,7 +16,6 @@ export type EmployeeState = {
   totalPages: number;
 };
 
-
 export interface EmployeeResponse {
   employees: Employee[];
   count: number;
@@ -91,23 +90,6 @@ export interface EmployeeFormProps {
   formResult: "failure" | "success" | null;
 }
 
-// export interface EmployeeFieldGroupProps {
-//   formFields: FieldProps[];
-//   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-//   selectedEmployee: CreateEmployee;
-//   errorMap: (fieldName: string, fieldValue: string) => boolean;
-//   getFieldError: (fieldName: string) => string | null;
-//   groupField: FieldType[];
-// }
-
-export interface EmployeeFieldGroupProps {
-  // formFields: FieldType[][];
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  // selectedEmployee: CreateEmployee;
-  // errorMap: (fieldName: string, fieldValue: string) => boolean;
-  // getFieldError: (fieldName: string) => string | null;
-}
-
 export interface FieldProps {
   label: string;
   name: string;
@@ -116,11 +98,6 @@ export interface FieldProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   error: string | null;
 }
-
-// export type FieldProps = FieldType & {
-//   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-//   error: string | null;
-// };
 
 export type FieldType = {
   label: string;

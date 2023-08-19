@@ -1,7 +1,6 @@
 import {render, screen} from '@testing-library/react';
 import {Provider} from 'react-redux';
 import configureStore from 'redux-mock-store';
-// import {fetchEmployees} from '../../redux/actions';
 import Home from '../Home';
 import {MockStoreEnhanced} from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -35,7 +34,6 @@ describe('Home Page', () => {
 
     const actions = store.getActions();
     expect(actions).toContainEqual(expect.objectContaining({type: 'employees/fetchAll/pending'}));
-    // expect(actions).toContainEqual(fetchEmployees({}));
   });
 
   it('displays loading state', () => {

@@ -5,13 +5,11 @@ import {toISODateString} from "./form/utils/helpers.ts";
 interface EmployeeCardProps {
   employee: Employee;
   onSelect?: (id: string) => void;
-  order?: number;
 }
 
 const EmployeeCard: React.FC<EmployeeCardProps> = ({
                                                      employee,
                                                      onSelect,
-                                                     order
                                                    }) => {
   return (
     <div
