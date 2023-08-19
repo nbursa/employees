@@ -1,15 +1,3 @@
-# App is initialized with Vite build tool
-
-*React/TypeScript + swc*
-
-This template provides a minimal setup to get React working
-in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-Of course! Here's the documentation for your app in Markdown
-format:
-
 # My React App with Vite
 
 This application is initialized with the Vite build tool,
