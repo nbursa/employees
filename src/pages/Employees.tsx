@@ -8,21 +8,24 @@ import {
 import DeleteForm from "../components/form/DeleteForm.tsx";
 import EmployeeForm
   from "../components/form/EmployeeForm.tsx";
-import {
-  EmployeeFormProvider
-} from '../contexts/EmployeeFormContext';
 import {styled} from "@mui/system";
-// import theme from "tailwindcss/defaultTheme";
 import {useTheme} from "@mui/material/styles";
+import useEmployeeForm from "../hooks/useEmployeeForm.tsx";
 
 const Employees: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState(0);
   const theme = useTheme();
+  const {
+    selectedEmployeeId,
+  } = useEmployeeForm();
 
   useEffect(() => {
+    if (selectedEmployeeId) {
+      return setActiveTab(1);
+    }
     dispatch(fetchEmployees({}));
-  }, [dispatch]);
+  }, [dispatch, selectedEmployeeId]);
 
   const handleChangeTab = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -36,7 +39,7 @@ const Employees: React.FC = () => {
   });
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 pb-12">
       <h3 className="text-xl font-bold my-6">Manage
         Employees</h3>
 

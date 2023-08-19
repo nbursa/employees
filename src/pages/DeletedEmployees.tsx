@@ -4,6 +4,7 @@ import {AppDispatch, RootState} from "../redux/store.ts";
 import NoResults from "../components/NoResults.tsx";
 import {getDeletedEmployees} from "../redux/actions.ts";
 import {AnyAction} from "redux";
+import EmployeeCard from "../components/EmployeeCard.tsx";
 
 const DeletedEmployees: React.FC = () => {
   const deletedEmployees = useSelector((state: RootState) =>
@@ -20,20 +21,23 @@ const DeletedEmployees: React.FC = () => {
 
   return (
     <div
-      className='flex flex-col justify-center items-center'>
+      className='container mx-auto flex pb-12 flex-col justify-center items-center'>
       <h3 className="text-xl font-bold my-6">Deleted
         Employees</h3>
-      <ul>
-        {!!deletedEmployees.length && deletedEmployees.map(employee => (
-          <li key={employee._id}>
-            {employee._id} - {employee.name}
-          </li>
+      <div className='w-full max-w-2xl'>
+        {!!deletedEmployees.length && deletedEmployees.map((employee, index) => (
+          <EmployeeCard
+            order={index + 1}
+            key={employee._id}
+            employee={employee}
+            // onSelect={onSelect}
+          />
         ))}
         {!deletedEmployees.length &&
             <NoResults title='No Deleted Employees'
                        message='Deleted employees will show here.'/>
         }
-      </ul>
+      </div>
     </div>
   );
 };

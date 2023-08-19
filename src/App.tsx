@@ -15,6 +15,22 @@ import {LocalizationProvider} from "@mui/x-date-pickers";
 import {ToastContainer} from 'react-toastify';
 import EmployeeFormProvider
   from "./contexts/EmployeeFormContext.tsx";
+import {
+  ThemeProvider,
+  createTheme
+} from '@mui/material/styles';
+
+const theme = createTheme({
+  palette: {
+    yellow: {
+      main: 'rgb(254, 249, 195)',
+      100: 'rgb(234, 229, 175)',
+      200: '#FFEB3B',
+      400: '#FDD835',
+      700: '#FBC02D',
+    },
+  },
+});
 
 const router = createBrowserRouter(routes);
 
@@ -24,11 +40,13 @@ const App: React.FC = () => {
     <ErrorBoundary>
       <Provider store={store}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <Navigation/>
-          <EmployeeFormProvider>
-            <RouterProvider router={router}/>
-          </EmployeeFormProvider>
-          <ToastContainer/>
+          <ThemeProvider theme={theme}>
+            <Navigation/>
+            <EmployeeFormProvider>
+              <RouterProvider router={router}/>
+            </EmployeeFormProvider>
+            <ToastContainer/>
+          </ThemeProvider>
         </LocalizationProvider>
       </Provider>
     </ErrorBoundary>

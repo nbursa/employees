@@ -7,6 +7,8 @@ import {AppDispatch} from "../redux/store.ts";
 import NoResults from "../components/NoResults.tsx";
 import Pagination from "../components/Pagination.tsx";
 import useEmployeeForm from "../hooks/useEmployeeForm.tsx";
+import {useNavigate} from 'react-router-dom';
+import EmployeeCard from "../components/EmployeeCard.tsx";
 
 const Home: React.FC = () => {
   const employees = useSelector((state: RootState) => state.employees?.employees);
@@ -15,10 +17,9 @@ const Home: React.FC = () => {
   const error = useSelector((state: RootState) => typeof state.employees?.error === 'string' ? state.employees?.error : undefined);
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = useSelector((state: RootState) => state.employees?.totalPages || 1);
+  const navigate = useNavigate();
   const {
-    // selectedEmployeeId,
     setSelectedEmployeeId,
-    // onSubmit
   } = useEmployeeForm();
 
   const handlePageChange = (page: number) => {
@@ -27,7 +28,7 @@ const Home: React.FC = () => {
 
   const onSelect = (id) => {
     setSelectedEmployeeId(id);
-    router.push('/employees')
+    navigate('/employees')
   }
 
   useEffect(() => {
@@ -43,29 +44,30 @@ const Home: React.FC = () => {
 
   return (
     <div
-      className='flex flex-col items-center justify-center'>
+      className='container mx-auto p-4 pb-12 flex flex-col items-center justify-center'>
       <h2 className="text-2xl font-bold my-6">Employees
         List</h2>
 
       {loading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
-      {employees && employees.length === 0 && (
-        <NoResults/>
-      )}
-      <ul>
-        {Array.isArray(employees) && employees.map((employee: Employee) => (
-          <li
+      <div className='w-full max-w-2xl'>
+        {Array.isArray(employees) && employees.map((employee: Employee, index: number) => (
+          <EmployeeCard
+            order={index + 1}
             key={employee._id}
-            onClick={() => onSelect(employee._id)}
-            style={{cursor: 'pointer'}}
-          >{employee.name}</li>
+            employee={employee}
+            onSelect={onSelect}
+          />
         ))}
-      </ul>
+      </div>
       {!!employees.length && <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={handlePageChange}
       />}
+      {employees && employees.length === 0 && (
+        <NoResults withButton/>
+      )}
     </div>
   );
 }

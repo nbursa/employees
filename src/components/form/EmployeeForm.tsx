@@ -13,10 +13,10 @@ import FormFieldsGroup
 import {capitalizeFirstLetter} from "./utils/helpers";
 import FormSelect from "./components/FormSelect.tsx";
 import {EmployeeFormProps} from "../../types";
-import {useTheme} from "@mui/material/styles";
+// import {useTheme} from "@mui/material/styles";
 
 const EmployeeForm: React.FC<EmployeeFormProps> = ({formType}) => {
-  const theme = useTheme();
+  // const theme = useTheme();
   const {
     selectedEmployeeId,
     setSelectedEmployeeId,
@@ -50,11 +50,11 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({formType}) => {
       <Button
         type="submit"
         sx={{
-          backgroundColor: `${theme.palette.grey[200]}`,
+          backgroundColor: theme => theme.palette.grey[200],
           padding: '.75rem 1.25rem',
-          color: `${theme.palette.grey[700]}`,
+          color: theme => theme.palette.grey[700],
           '&:hover': {
-            backgroundColor: `${theme.palette.grey[300]}`,
+            backgroundColor: theme => theme.palette.grey[300],
           },
         }}
       >

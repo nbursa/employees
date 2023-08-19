@@ -164,7 +164,8 @@ export const EmployeeFormProvider: React.FC<{
     setFormResult,
     handleFormSubmit,
     defaultNewEmployee,
-    formValues
+    formValues,
+    setFormValues
   };
 
   return (
