@@ -60,22 +60,15 @@ const employeeSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(fetchEmployees.fulfilled, (state, action) => {
-        console.log("Payload count:", action.payload.count);
-        console.log("State limit:", state.limit);
-
         state.status = 'succeeded';
         state.employees = action.payload.employees;
         state.totalCount = action.payload.count;
         state.limit = action.meta.arg.limit;
         state.totalPages = Math.ceil(action.payload.count / state.limit);
-
-        console.log("Calculated totalPages:", state.totalPages);
       })
       .addCase(fetchEmployees.rejected, (state, action) => {
         state.status = 'failed';
-        console.log('fetchEmployees.rejected', action || 'Failed to fetch employees.')
         state.error = action.error.message || 'Failed to fetch employees.';
-        console.log('fetchEmployees.rejected', action.error.message || 'Failed to fetch employees.')
       })
       .addCase(fetchEmployeeById.pending, (state) => {
         state.status = 'loading';

@@ -13,38 +13,16 @@ import {ENDPOINTS} from '../api/config.ts';
 export const fetchEmployees = createAsyncThunk(
   'employees/fetchAll',
   async (params, thunkAPI) => {
-    // const state = thunkAPI.getState() as RootState;
-    const {page, limit} = params
-    console.log('fetchEmployees', {page, limit});
     try {
       const response = await axios.get<EmployeeResponse>(ENDPOINTS.GET_EMPLOYEES, {
         params
       });
       return response.data;
     } catch (error) {
-      console.error('Error fetching employees:', error);
       return thunkAPI.rejectWithValue(error);
     }
   }
 );
-
-// export const fetchEmployees = createAsyncThunk(
-//   'employees/fetchAll',
-//   async (params: {
-//     page?: number,
-//     limit?: number
-//   } = {page: 1, limit: 10}, thunkAPI) => {
-//     try {
-//       const response = await axios.get<EmployeeResponse>(ENDPOINTS.GET_EMPLOYEES, {
-//         params: params
-//       });
-//       return response.data;
-//     } catch (error) {
-//       console.error('Error fetching employees:', error);
-//       return thunkAPI.rejectWithValue(error);
-//     }
-//   }
-// );
 
 export const fetchEmployeeById = createAsyncThunk(
   'employees/fetchById',
@@ -59,35 +37,6 @@ export const fetchEmployeeById = createAsyncThunk(
   }
 );
 
-// export const createEmployee = createAsyncThunk(
-//   'employees/create',
-//   async (employeeData: CreateEmployee, thunkAPI) => {
-//     try {
-//       const response = await axios.post<CreateEmployeeResponse>(ENDPOINTS.CREATE_EMPLOYEE, employeeData);
-//       return response.data;
-//
-//     } catch (error: any) {
-//       console.error('Error while creating employee:', error);
-//       // Handle specific error format returned from the backend
-//       if (error.response && error.response.data && Array.isArray(error.response.data.message)) {
-//         // Parsing field-specific error messages
-//         const errorMessages = error.response.data.message;
-//         const errors: ValidationErrorPayload = {};
-//         errorMessages.forEach((errorMsg: string) => {
-//           const spaceIndex = errorMsg.indexOf(' ');
-//           const field = errorMsg.substring(0, spaceIndex)
-//           errors[field] = errorMsg.substring(spaceIndex + 1);
-//         });
-//         console.log('thunkAPI errors', errors);
-//         return errors;
-//       }
-//
-//       // Generic error handling
-//       return thunkAPI.rejectWithValue(error.message || 'Unexpected error occurred.');
-//     }
-//   }
-// );
-
 export const createEmployee = createAsyncThunk(
   'employees/create',
   async (employeeData: CreateEmployee, thunkAPI) => {
@@ -95,12 +44,8 @@ export const createEmployee = createAsyncThunk(
       const response = await axios.post<CreateEmployeeResponse>(ENDPOINTS.CREATE_EMPLOYEE, employeeData);
       return response.data;
 
-    } catch (error: any) {
-      // console.error('Error while creating employee:', error);
-
-      // Check if the error has a specific format returned from the backend
+    } catch (error: Error) {
       if (error.response && error.response.data && Array.isArray(error.response.data.message)) {
-        // Parsing field-specific error messages
         const errorMessages = error.response.data.message;
         const errors: ValidationErrorPayload = {};
         errorMessages.forEach((errorMsg: string) => {
@@ -108,11 +53,8 @@ export const createEmployee = createAsyncThunk(
           const field = errorMsg.substring(0, spaceIndex)
           errors[field] = errorMsg.substring(spaceIndex + 1);
         });
-        // console.log('thunkAPI errors', errors);
         return thunkAPI.rejectWithValue(errors);
       }
-
-      // Generic error handling
       return thunkAPI.rejectWithValue('Unexpected error occurred.');
     }
   }
@@ -130,7 +72,6 @@ export const updateEmployee = createAsyncThunk(
       const response = await axios.patch<UpdateEmployee>(ENDPOINTS.UPDATE_EMPLOYEE(updateData.id), updateData);
       return response.data;
     } catch (error) {
-      console.error(`Error updating employee (${updateData.id}):`, error);
       return thunkAPI.rejectWithValue(error);
     }
   }
@@ -143,7 +84,6 @@ export const softDeleteEmployee = createAsyncThunk(
       const response = await axios.delete(ENDPOINTS.SOFT_DELETE_EMPLOYEE(id));
       return response.data;
     } catch (error) {
-      console.error(`Error soft-deleting employee (${id}):`, error);
       return thunkAPI.rejectWithValue(error);
     }
   }
@@ -164,7 +104,6 @@ export const getDeletedEmployees = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      console.error('Error fetching deleted employees:', error);
       return thunkAPI.rejectWithValue(error);
     }
   }

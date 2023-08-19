@@ -19,7 +19,6 @@ const FormDatePicker: React.FC<EmployeeDatePickerProps> = ({
     formErrors
   } = useEmployeeForm();
   const fieldValue = formValues && formValues[name] ? new Date(formValues[name]) : null;
-  // console.log('fieldValue', fieldValue)
   const fieldError = formErrors[name] || '';
 
   return (
