@@ -2,6 +2,8 @@ import React from 'react';
 import {useNavigate} from 'react-router-dom';
 import CustomButton from "./CustomButton.tsx";
 
+// import {useTheme} from "@mui/material/styles";
+
 interface NoResultsProps {
   title?: string;
   message?: string;
@@ -13,6 +15,7 @@ const NoResults: React.FC<NoResultsProps> = ({
                                                title = 'No Employees Found!',
                                                message = 'Please add an employee or check back later.'
                                              }) => {
+  // const theme = useTheme();
   const navigate = useNavigate();
 
   const handleRouteChange = () => {
@@ -28,14 +31,15 @@ const NoResults: React.FC<NoResultsProps> = ({
           <CustomButton
               onClick={handleRouteChange}
               label="Go to Employees"
-              sx={(theme) => ({
-                backgroundColor: theme.palette.yellow.main,
-                borderColor: theme.palette.yellow.main,
-                color: theme.palette.yellow[700],
-                '&:hover': {
-                  backgroundColor: theme.palette.yellow[100],
-                }
-              })}
+              className="bg-yellow-100 border-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:text-yellow-700"
+            // sx={{
+            //   backgroundColor: theme.palette.yellow[100],
+            //   borderColor: theme.palette.yellow[100],
+            //   color: theme.palette.yellow[700],
+            //   '&:hover': {
+            //     backgroundColor: theme.palette.yellow[100],
+            //   }
+            // }}
           />
       }
     </div>

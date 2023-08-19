@@ -14,6 +14,7 @@ export type EmployeeState = {
     payload: ValidationErrorPayload;
   };
   totalPages: number;
+  limit: number;
 };
 
 export interface EmployeeResponse {
@@ -25,7 +26,7 @@ export interface HomeAddress {
   city: string;
   ZIPCode: string;
   addressLine1: string;
-  addressLine2: string;
+  addressLine2?: string;
   _id?: string;
 }
 

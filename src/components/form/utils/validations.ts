@@ -17,7 +17,8 @@ export const isValidZIPCode = (zip: string): boolean => {
 };
 
 export const isValidZIPCodeNumber = (zip: string): boolean => {
-  return typeof zip === "number" && zip.length === 5;
+  const parsedNumber = parseInt(zip, 10);
+  return !isNaN(parsedNumber);
 };
 
 export const isValidCity = (city: string): boolean => {

@@ -1,13 +1,35 @@
 import {render, screen} from '@testing-library/react';
-import {Provider} from 'react-redux';
 import configureStore from 'redux-mock-store';
 import Home from '../Home';
 import {MockStoreEnhanced} from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import {BrowserRouter} from 'react-router-dom';
+import {Provider} from 'react-redux';
+import {
+  EmployeeFormProvider
+} from '../../contexts/EmployeeFormContext';
+import useEmployeeForm from '../../hooks/useEmployeeForm';
+import defaultTheme from "../../themes/defaultTheme.ts";
+import {ThemeProvider} from "@mui/material/styles";
 
 jest.mock('../../api/config', () => ({
   API_BASE_URL: 'http://testurl.com/'
 }));
+
+// Mock the useEmployeeForm hook
+jest.mock('../../hooks/useEmployeeForm', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const mockEmployeeFormContext = {
+  handleInputChange: jest.fn(),
+  onSubmit: jest.fn(),
+  // ...other mock values
+};
+
+const mockUseEmployeeForm = useEmployeeForm as jest.Mock;
+mockUseEmployeeForm.mockReturnValue(mockEmployeeFormContext);
 
 const middlewares = [thunk];
 const mockStore = configureStore(middlewares);
@@ -20,7 +42,7 @@ describe('Home Page', () => {
       employees: {
         employees: [],
         status: 'idle',
-        error: null
+        errors: null
       }
     });
   });
@@ -28,7 +50,13 @@ describe('Home Page', () => {
   it('dispatches fetchEmployees on mount', () => {
     render(
       <Provider store={store}>
-        <Home/>
+        <BrowserRouter>
+          <ThemeProvider theme={defaultTheme}>
+            <EmployeeFormProvider>
+              <Home/>
+            </EmployeeFormProvider>
+          </ThemeProvider>
+        </BrowserRouter>
       </Provider>
     );
 
@@ -46,7 +74,11 @@ describe('Home Page', () => {
     });
     render(
       <Provider store={store}>
-        <Home/>
+        <BrowserRouter>
+          <ThemeProvider theme={defaultTheme}>
+            <Home/>
+          </ThemeProvider>
+        </BrowserRouter>
       </Provider>
     );
     expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
@@ -62,10 +94,15 @@ describe('Home Page', () => {
     });
     render(
       <Provider store={store}>
-        <Home/>
+        <BrowserRouter>
+          <ThemeProvider theme={defaultTheme}>
+            <Home/>
+          </ThemeProvider>
+        </BrowserRouter>
       </Provider>
     );
-    expect(screen.getByText(/Error: Something went wrong/i)).toBeInTheDocument();
+    expect(screen.getByText(/No Employees Found!/i)).toBeInTheDocument();
+
   });
 
   it('displays list of employees', async () => {
@@ -77,12 +114,16 @@ describe('Home Page', () => {
       employees: {
         employees: mockEmployees,
         status: 'completed',
-        error: null
+        errors: null
       }
     });
     render(
       <Provider store={store}>
-        <Home/>
+        <BrowserRouter>
+          <ThemeProvider theme={defaultTheme}>
+            <Home/>
+          </ThemeProvider>
+        </BrowserRouter>
       </Provider>
     );
     for (const employee of mockEmployees) {

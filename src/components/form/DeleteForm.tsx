@@ -72,11 +72,11 @@ const DeleteForm: React.FC = () => {
         type="submit"
         label="Soft Delete Employee"
         sx={{
-          backgroundColor: `${theme.palette.grey[200]}`,
+          backgroundColor: theme.palette.grey[200],
           padding: '.75rem 1.25rem',
-          color: `${theme.palette.grey[700]}`,
+          color: theme.palette.grey[700],
           '&:hover': {
-            backgroundColor: `${theme.palette.grey[300]}`,
+            backgroundColor: theme.palette.grey[300],
           },
         }}
       >

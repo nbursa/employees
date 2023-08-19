@@ -14,7 +14,15 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
   return (
     <div
       className={`border p-4 mb-4 rounded-lg shadow-md transition-shadow duration-300 ${onSelect && 'cursor-pointer hover:shadow-lg'} w-full`}
-      onClick={onSelect ? () => onSelect(employee._id) : null}
+      onClick={
+        onSelect && employee._id
+          ? () => {
+            if (employee._id) {
+              onSelect(employee._id);
+            }
+          }
+          : undefined
+      }
     >
       <h3
         className="text-xl font-bold mb-2">{employee.name}</h3>
@@ -27,7 +35,7 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
       <p className="text-gray-600">Employment
         Date: {toISODateString(employee.dateOfEmployment)}</p>
       <p
-        className="text-gray-600">Address: {employee.homeAddress.addressLine1}</p>
+        className="text-gray-600">Address: {employee.homeAddress?.addressLine1}</p>
       <p
         className="text-gray-600">Status: {employee.isDeleted ? 'Deleted' : 'Active'}</p>
     </div>

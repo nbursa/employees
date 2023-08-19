@@ -1,9 +1,25 @@
+jest.mock('../../__mocks__/config');
+
 import {render} from '@testing-library/react';
 import ErrorBoundary from '../ErrorBoundary.tsx';
 
 const Bomb = () => {
   throw new Error('Boom');
-}
+};
+
+
+let logSpy: jest.SpyInstance;
+
+beforeAll(() => {
+  logSpy = jest.spyOn(console, 'log').mockImplementation(() => {
+  });
+});
+
+afterAll(() => {
+  if (logSpy && logSpy.mockRestore) {
+    logSpy.mockRestore();
+  }
+});
 
 describe('ErrorBoundary', () => {
   let mockConsoleError: jest.SpyInstance;

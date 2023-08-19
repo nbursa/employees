@@ -19,10 +19,13 @@ export const getValueByPath = (obj: any, path: string): any => {
   }, obj);
 }
 
-export function debounce(func, wait) {
-  let timeout;
-  return function (...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
+export function debounce(func: (...args: any[]) => void, wait: number): (...args: any[]) => void {
+  let timeout: NodeJS.Timeout | null = null;
+
+  return function (...args: any[]) {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => func(...args), wait);
   };
 }

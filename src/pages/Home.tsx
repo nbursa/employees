@@ -14,7 +14,7 @@ const Home: React.FC = () => {
   const employees = useSelector((state: RootState) => state.employees?.employees);
   const loading = useSelector((state: RootState) => state.employees?.status === 'loading');
   const dispatch = useDispatch<AppDispatch>();
-  const error = useSelector((state: RootState) => typeof state.employees?.error === 'string' ? state.employees?.error : undefined);
+  const error = useSelector((state: RootState) => typeof state.employees?.errors === 'string' ? state.employees?.errors : undefined);
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = useSelector((state: RootState) => state.employees?.totalPages || 1);
   const navigate = useNavigate();
@@ -27,9 +27,9 @@ const Home: React.FC = () => {
     setCurrentPage(page);
   };
 
-  const onSelect = (id) => {
+  const handleSelect = (id: string) => {
     setSelectedEmployeeId(id);
-    navigate('/employees')
+    navigate('/employees');
   }
 
   useEffect(() => {
@@ -52,12 +52,11 @@ const Home: React.FC = () => {
       {loading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
       <div className='w-full max-w-2xl'>
-        {Array.isArray(employees) && employees.map((employee: Employee, index: number) => (
+        {Array.isArray(employees) && employees.map((employee: Employee) => (
           <EmployeeCard
-            order={index + 1}
             key={employee._id}
             employee={employee}
-            onSelect={onSelect}
+            onSelect={() => handleSelect(employee._id || '')}
           />
         ))}
       </div>

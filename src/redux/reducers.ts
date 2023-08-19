@@ -1,12 +1,15 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {Employee, EmployeeState} from '../types';
+import {
+  Employee,
+  EmployeeState, ValidationErrorPayload,
+} from '../types';
 import {
   fetchEmployees,
   softDeleteEmployee,
   fetchEmployeeById,
-  createEmployee, getDeletedEmployees
+  createEmployee,
+  getDeletedEmployees
 } from './actions';
-
 
 const initialState: EmployeeState = {
   employees: [],
@@ -17,8 +20,8 @@ const initialState: EmployeeState = {
   errors: {
     name: '',
     message: '',
-    payload: {}
-  }
+    payload: {},
+  },
 };
 
 const employeeSlice = createSlice({
@@ -27,10 +30,18 @@ const employeeSlice = createSlice({
   reducers: {
     employeesFetched(state, action: PayloadAction<Employee[]>) {
       state.employees = action.payload;
-      state.error = undefined;
+      state.errors = {
+        name: '',
+        message: '',
+        payload: {}
+      };
     },
     employeeFetchError(state, action: PayloadAction<string>) {
-      state.error = action.payload;
+      state.errors = {
+        name: 'Fetch Error',
+        message: action.payload,
+        payload: {}
+      };
     },
     setLimit(state, action: PayloadAction<number>) {
       state.limit = action.payload;
@@ -52,9 +63,11 @@ const employeeSlice = createSlice({
       })
       .addCase(createEmployee.rejected, (state, action) => {
         state.status = 'failed';
-        state.errors.name = 'Create Employee Error';
-        state.errors.message = action.error.message || 'Failed to create employee.';
-        state.errors.payload = action.payload || {};
+        state.errors = {
+          name: 'Create Employee Error',
+          message: action.error.message || 'Failed to create employee.',
+          payload: action.payload as ValidationErrorPayload,
+        };
       })
       .addCase(fetchEmployees.pending, (state) => {
         state.status = 'loading';
@@ -62,13 +75,18 @@ const employeeSlice = createSlice({
       .addCase(fetchEmployees.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.employees = action.payload.employees;
-        state.totalCount = action.payload.count;
-        state.limit = action.meta.arg.limit;
+        if (action.meta && action.meta.arg && typeof action.meta.arg.limit === 'number') {
+          state.limit = action.meta.arg.limit;
+        }
         state.totalPages = Math.ceil(action.payload.count / state.limit);
       })
       .addCase(fetchEmployees.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Failed to fetch employees.';
+        state.errors = {
+          name: 'Fetch Error',
+          message: action.error.message || 'Failed to fetch employees.',
+          payload: {}
+        };
       })
       .addCase(fetchEmployeeById.pending, (state) => {
         state.status = 'loading';
@@ -80,7 +98,11 @@ const employeeSlice = createSlice({
       })
       .addCase(fetchEmployeeById.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Failed to fetch employee by ID.';
+        state.errors = {
+          name: 'Fetch by ID Error',
+          message: action.error.message || 'Failed to fetch employee by ID.',
+          payload: {}
+        };
       })
       .addCase(softDeleteEmployee.pending, (state) => {
         state.status = 'loading';
@@ -96,7 +118,11 @@ const employeeSlice = createSlice({
       })
       .addCase(softDeleteEmployee.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Failed to soft-delete employee.';
+        state.errors = {
+          name: 'Soft Delete Error',
+          message: action.error.message || 'Failed to soft-delete employee.',
+          payload: {}
+        };
       })
       .addCase(getDeletedEmployees.pending, (state) => {
         state.status = 'loading';
@@ -107,7 +133,11 @@ const employeeSlice = createSlice({
       })
       .addCase(getDeletedEmployees.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Failed to fetch deleted employees.';
+        state.errors = {
+          name: 'Fetch Deleted Error',
+          message: action.error.message || 'Failed to fetch deleted employees.',
+          payload: {}
+        };
       })
   }
 });

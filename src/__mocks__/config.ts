@@ -1,9 +1,4 @@
-const employeesRoute = 'employees';
-let API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}:${import.meta.env.VITE_PORT}/${employeesRoute}`;
-
-if (process.env.NODE_ENV === 'test') {
-  API_BASE_URL = "http://mockurl:3000/employees";
-}
+const API_BASE_URL = "http://mockurl:3000/employees";
 
 export const ENDPOINTS = {
   CREATE_EMPLOYEE: `${API_BASE_URL}`,

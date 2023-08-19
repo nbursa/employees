@@ -1,32 +1,34 @@
 import React, {
   createContext,
   useState,
-  useEffect
+  useEffect,
+  ReactNode
 } from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../../redux/store.ts";
+import {RootState} from "../redux/store";
 import {
   CreateEmployee,
   ValidationErrorPayload
-} from "../../types";
+} from "../types";
 import {toast} from "react-toastify";
 import {
   errorMap
-} from "../components/form/utils/validations.ts";
+} from "../components/form/utils/validations";
 import {
   defaultNewEmployee
-} from "../components/form/utils/constants.ts";
+} from "../components/form/utils/constants";
 import {
   createEmployee, fetchEmployees,
   updateEmployee
-} from "../redux/actions.ts";
+} from "../redux/actions";
 import {HomeAddress} from "../types";
 import {
   initialFormValues
-} from "../components/form/utils/constants.ts";
+} from "../components/form/utils/constants";
 import {
   debounce
-} from "../components/form/utils/helpers.ts";
+} from "../components/form/utils/helpers";
+import {AppDispatch} from "../redux/store";
 
 interface EmployeeFormContextProps {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -36,11 +38,11 @@ interface EmployeeFormContextProps {
   selectedEmployeeId: string | null;
   setSelectedEmployeeId: React.Dispatch<React.SetStateAction<string | null>>;
   selectedEmployee: CreateEmployee;
-  setFormEmployee: React.Dispatch<React.SetStateAction<CreateEmployee>>;
   formErrors: ValidationErrorPayload;
   setFormErrors: React.Dispatch<React.SetStateAction<ValidationErrorPayload>>;
   formResult: "failure" | "success" | null;
   setFormResult: React.Dispatch<React.SetStateAction<"failure" | "success" | null>>;
+
 }
 
 export const EmployeeFormContext = createContext<EmployeeFormContextProps | undefined>(undefined);
@@ -48,7 +50,7 @@ export const EmployeeFormContext = createContext<EmployeeFormContextProps | unde
 export const EmployeeFormProvider: React.FC<{
   children: ReactNode
 }> = ({children}) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const employees = useSelector((state: RootState) => state.employees.employees);
 
   const [formValues, setFormValues] = useState<CreateEmployee>(initialFormValues);
@@ -75,7 +77,7 @@ export const EmployeeFormProvider: React.FC<{
       dispatch(fetchEmployees({}));
     } else if (createEmployee.rejected.match(action) || updateEmployee.rejected.match(action)) {
       if (action.payload && typeof action.payload === 'object') {
-        setFormErrors(action.payload);
+        setFormErrors(action.payload as ValidationErrorPayload);
       } else {
         console.error("Error while handling the form submission:", action.error);
         toast.error(`Error while handling the form submission: ${action.error.message}`);
@@ -104,14 +106,15 @@ export const EmployeeFormProvider: React.FC<{
     return formErrors[fieldName] || null;
   };
 
-  const debouncedValidation = debounce((name, value) => {
+  const debouncedValidation = debounce((name: string, value: string) => {
     const errorExists = errorMap(name, value);
     const errorMessage = errorExists ? formErrors[name] : null;
-
-    setFormErrors(prevErrors => ({
-      ...prevErrors,
-      [name]: errorMessage
-    }));
+    setFormErrors(prevErrors => {
+      return {
+        ...prevErrors,
+        [name]: errorMessage
+      } as ValidationErrorPayload;
+    });
   }, 300);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,13 +124,20 @@ export const EmployeeFormProvider: React.FC<{
       const keys = name.split('.');
       if (keys.length === 2) {
         const [key, nestedKey] = keys;
-        setFormValues(prev => ({
-          ...prev,
-          [key]: {
-            ...prev[key as keyof CreateEmployee],
-            [nestedKey as keyof HomeAddress]: value
-          }
-        }));
+        setFormValues(prev => {
+          const currentKeyVal = prev[key as keyof CreateEmployee];
+          const updatedValue = (typeof currentKeyVal === 'object' && currentKeyVal !== null)
+            ? {
+              ...currentKeyVal,
+              [nestedKey as keyof HomeAddress]: value
+            }
+            : {[nestedKey as keyof HomeAddress]: value};
+
+          return {
+            ...prev,
+            [key]: updatedValue
+          };
+        });
       }
     } else {
       setFormValues(prev => ({
@@ -143,7 +153,9 @@ export const EmployeeFormProvider: React.FC<{
     if (selectedEmployeeId) {
       const foundEmployee = employees.find(emp => emp._id === selectedEmployeeId);
       setSelectedEmployee(foundEmployee || defaultNewEmployee);
-      setFormValues(foundEmployee);
+      if (foundEmployee) {
+        setFormValues(foundEmployee);
+      }
     } else {
       setSelectedEmployee(defaultNewEmployee);
       setFormValues(initialFormValues);
@@ -165,7 +177,8 @@ export const EmployeeFormProvider: React.FC<{
     handleFormSubmit,
     defaultNewEmployee,
     formValues,
-    setFormValues
+    setFormValues,
+    // setFormEmployee
   };
 
   return (

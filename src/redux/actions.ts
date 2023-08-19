@@ -10,7 +10,12 @@ import {
 } from '../types';
 import {ENDPOINTS} from '../api/config.ts';
 
-export const fetchEmployees = createAsyncThunk(
+type FetchEmployeesParams = {
+  page?: number;
+  limit?: number;
+};
+
+export const fetchEmployees = createAsyncThunk<EmployeeResponse, FetchEmployeesParams>(
   'employees/fetchAll',
   async (params, thunkAPI) => {
     try {
@@ -43,20 +48,50 @@ export const createEmployee = createAsyncThunk(
     try {
       const response = await axios.post<CreateEmployeeResponse>(ENDPOINTS.CREATE_EMPLOYEE, employeeData);
       return response.data;
-
-    } catch (error: Error) {
-      if (error.response && error.response.data && Array.isArray(error.response.data.message)) {
-        const errorMessages = error.response.data.message;
-        const errors: ValidationErrorPayload = {};
-        errorMessages.forEach((errorMsg: string) => {
-          const spaceIndex = errorMsg.indexOf(' ');
-          const field = errorMsg.substring(0, spaceIndex)
-          errors[field] = errorMsg.substring(spaceIndex + 1);
-        });
-        return thunkAPI.rejectWithValue(errors);
+    } catch (error: unknown) {
+      if (error instanceof Error && 'response' in error) {
+        const typedError = error as {
+          response: { data: { message: string[] } }
+        };
+        if (typedError.response.data && Array.isArray(typedError.response.data.message)) {
+          const errorMessages = typedError.response.data.message;
+          const errors: ValidationErrorPayload = {};
+          errorMessages.forEach((errorMsg: string) => {
+            const spaceIndex = errorMsg.indexOf(' ');
+            const field = errorMsg.substring(0, spaceIndex)
+            errors[field] = errorMsg.substring(spaceIndex + 1);
+          });
+          return thunkAPI.rejectWithValue(errors);
+        }
       }
       return thunkAPI.rejectWithValue('Unexpected error occurred.');
     }
+    // } catch (error: unknown) {
+    //   if (error instanceof Error && 'response' in error && error.response && error.response.data && Array.isArray(error.response.data.message)) {
+    //     const errorMessages = error.response.data.message;
+    //     const errors: ValidationErrorPayload = {};
+    //     errorMessages.forEach((errorMsg: string) => {
+    //       const spaceIndex = errorMsg.indexOf(' ');
+    //       const field = errorMsg.substring(0, spaceIndex)
+    //       errors[field] = errorMsg.substring(spaceIndex + 1);
+    //     });
+    //     return thunkAPI.rejectWithValue(errors);
+    //   }
+    //   return thunkAPI.rejectWithValue('Unexpected error occurred.');
+    // }
+    // } catch (error: unknown) {
+    //   if (error.response && error.response.data && Array.isArray(error.response.data.message)) {
+    //     const errorMessages = error.response.data.message;
+    //     const errors: ValidationErrorPayload = {};
+    //     errorMessages.forEach((errorMsg: string) => {
+    //       const spaceIndex = errorMsg.indexOf(' ');
+    //       const field = errorMsg.substring(0, spaceIndex)
+    //       errors[field] = errorMsg.substring(spaceIndex + 1);
+    //     });
+    //     return thunkAPI.rejectWithValue(errors);
+    //   }
+    //   return thunkAPI.rejectWithValue('Unexpected error occurred.');
+    // }
   }
 );
 

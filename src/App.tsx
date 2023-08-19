@@ -1,8 +1,7 @@
 import React from 'react';
 import Navigation from "./components/Navigation.tsx";
 import {
-  createBrowserRouter,
-  RouterProvider
+  BrowserRouter, Routes, Route
 } from 'react-router-dom';
 import routes from './routes';
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
@@ -18,9 +17,7 @@ import EmployeeFormProvider
 import {
   ThemeProvider
 } from '@mui/material/styles';
-import {defaultTheme} from './themes';
-
-const router = createBrowserRouter(routes);
+import defaultTheme from './themes/defaultTheme';
 
 const App: React.FC = () => {
   return (
@@ -28,13 +25,23 @@ const App: React.FC = () => {
       <Provider store={store}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <ThemeProvider theme={defaultTheme}>
-            <Navigation/>
-            <div className='pt-16'>
-              <EmployeeFormProvider>
-                <RouterProvider router={router}/>
-              </EmployeeFormProvider>
-            </div>
-            <ToastContainer/>
+            <BrowserRouter>
+              <Navigation/>
+              <div className='pt-16'>
+                <EmployeeFormProvider>
+                  <Routes>
+                    {routes.map((route, index) => (
+                      <Route
+                        key={index}
+                        path={route.path}
+                        element={route.element}
+                      />
+                    ))}
+                  </Routes>
+                </EmployeeFormProvider>
+                <ToastContainer/>
+              </div>
+            </BrowserRouter>
           </ThemeProvider>
         </LocalizationProvider>
       </Provider>

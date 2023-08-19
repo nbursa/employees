@@ -1,6 +1,7 @@
 import React from 'react';
 import {Typography} from '@mui/material';
 import CustomButton from "./CustomButton.tsx";
+import {useTheme} from "@mui/material/styles";
 
 interface PaginationProps {
   currentPage: number;
@@ -13,6 +14,7 @@ const Pagination: React.FC<PaginationProps> = ({
                                                  totalPages,
                                                  onPageChange
                                                }) => {
+  const theme = useTheme();
 
   const handlePrevious = () => {
     if (currentPage > 1) {
@@ -34,11 +36,11 @@ const Pagination: React.FC<PaginationProps> = ({
         disabled={currentPage === 1}
         sx={{
           mr: 2,
-          backgroundColor: theme => theme.palette.grey[200],
+          backgroundColor: theme.palette.grey[200],
           padding: '.75rem 1.25rem',
-          color: theme => theme.palette.grey[700],
+          color: theme.palette.grey[700],
           '&:hover': {
-            backgroundColor: theme => theme.palette.grey[300],
+            backgroundColor: theme.palette.grey[300],
           },
         }}
       />
@@ -51,11 +53,11 @@ const Pagination: React.FC<PaginationProps> = ({
         disabled={currentPage === totalPages}
         sx={{
           ml: 2,
-          backgroundColor: theme => theme.palette.grey[200],
+          backgroundColor: theme.palette.grey[200],
           padding: '.75rem 1.25rem',
-          color: theme => theme.palette.grey[700],
+          color: theme.palette.grey[700],
           '&:hover': {
-            backgroundColor: theme => theme.palette.grey[300],
+            backgroundColor: theme.palette.grey[300],
           },
         }}
       />

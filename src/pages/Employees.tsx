@@ -33,8 +33,8 @@ const Employees: React.FC = () => {
 
   const StyledTab = styled(Tab)({
     '&.Mui-selected': {
-      backgroundColor: `${theme.palette.grey[100]}`,
-      color: `${theme.palette.grey[900]}`,
+      backgroundColor: theme.palette.grey[100],
+      color: theme.palette.grey[900],
       fontWeight: 'bold',
     },
   });

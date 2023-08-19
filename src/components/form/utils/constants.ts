@@ -28,6 +28,8 @@ export const initialFormValues = {
     addressLine1: "",
     addressLine2: "",
   },
+  isDeleted: false,
+  deletedAt: null
 };
 
 export const formFields: FieldType[][] = [

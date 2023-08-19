@@ -3,9 +3,8 @@ import {createTheme} from '@mui/material/styles';
 const defaultTheme = createTheme({
   palette: {
     yellow: {
-      main: 'rgb(254, 249, 195)',
-      100: 'rgb(234, 229, 175)',
-      200: '#FFEB3B',
+      100: '#FEF9C3',
+      200: '#EAE5AF',
       400: '#FDD835',
       700: '#FBC02D',
     },
