@@ -1,6 +1,6 @@
 import React from 'react';
-import {Button, Typography} from '@mui/material';
-import {useTheme} from '@mui/material/styles';
+import {Typography} from '@mui/material';
+import CustomButton from "./CustomButton.tsx";
 
 interface PaginationProps {
   currentPage: number;
@@ -13,7 +13,6 @@ const Pagination: React.FC<PaginationProps> = ({
                                                  totalPages,
                                                  onPageChange
                                                }) => {
-  const theme = useTheme();
 
   const handlePrevious = () => {
     if (currentPage > 1) {
@@ -29,35 +28,37 @@ const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <div className="flex items-center justify-center mt-4">
-      <Button
+      <CustomButton
+        label="Prev"
         onClick={handlePrevious}
         disabled={currentPage === 1}
-        sx={{
+        sx={(theme) => ({
           mx: 2,
-          backgroundColor: `${theme.palette.grey[200]}`,
+          backgroundColor: theme.palette.grey[200],
           '&:hover': {
-            backgroundColor: `${theme.palette.grey[300]}`,
-          },
-        }}
+            backgroundColor: theme.palette.grey[300],
+          }
+        })}
       >
         Previous
-      </Button>
+      </CustomButton>
       <Typography>
         Page {currentPage} of {totalPages}
       </Typography>
-      <Button
+      <CustomButton
+        label="Next"
         onClick={handleNext}
         disabled={currentPage === totalPages}
-        sx={{
+        sx={(theme) => ({
           mx: 2,
-          backgroundColor: `${theme.palette.grey[200]}`,
+          backgroundColor: theme.palette.grey[200],
           '&:hover': {
-            backgroundColor: `${theme.palette.grey[300]}`,
-          },
-        }}
+            backgroundColor: theme.palette.grey[300],
+          }
+        })}
       >
         Next
-      </Button>
+      </CustomButton>
     </div>
   );
 };

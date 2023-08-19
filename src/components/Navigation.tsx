@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import Link from "@mui/material/Link";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -10,12 +10,15 @@ const Navigation: React.FC = () => {
 
   return (
     <div className="relative">
-      <nav className="p-4 shadow-md sticky top-0 w-full z-50 bg-gray-900 text-white">
-        <div className="container mx-auto flex justify-between items-center">
+      <nav
+        className="p-4 shadow-md fixed top-0 left-0 w-full z-50 bg-gray-900 text-white">
+        <div
+          className="container mx-auto flex justify-between items-center">
           <div className="flex space-x-4">
             <div className="hidden md:flex space-x-4">
               {routes.map((route, index) => (
-                <li key={index} className="text-white px-3 py-1 list-none">
+                <li key={index}
+                    className="text-white px-3 py-1 list-none">
                   <Link
                     sx={{
                       color: "#fafafa",
@@ -38,12 +41,14 @@ const Navigation: React.FC = () => {
             color="inherit"
             className="md:!hidden"
           >
-            {mobileNavOpen ? <CloseIcon /> : <MenuIcon />}
+            {mobileNavOpen ? <CloseIcon/> : <MenuIcon/>}
           </IconButton>
         </div>
         {mobileNavOpen && (
-          <div className="md:hidden absolute top-full right-0 mt-1 w-auto bg-gray-900 rounded-lg shadow-lg">
-            <ul className="flex flex-col space-y-2 py-8 px-6 text-right">
+          <div
+            className="md:hidden absolute top-full right-0 mt-1 w-auto bg-gray-900 rounded-lg shadow-lg">
+            <ul
+              className="flex flex-col space-y-2 py-8 px-6 text-right">
               {routes.map((route, index) => (
                 <li key={index}>
                   <Link

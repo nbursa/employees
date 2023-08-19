@@ -34,14 +34,16 @@ const Employees: React.FC = () => {
   const StyledTab = styled(Tab)({
     '&.Mui-selected': {
       backgroundColor: `${theme.palette.grey[100]}`,
-      color: `${theme.palette.grey[700]}`,
+      color: `${theme.palette.grey[900]}`,
+      fontWeight: 'bold',
     },
   });
 
   return (
-    <div className="container mx-auto px-4 pb-12">
-      <h3 className="text-xl font-bold my-6">Manage
-        Employees</h3>
+    <div className="container mx-auto p-4 pb-12">
+      <h2
+        className="text-2xl font-bold my-6 text-center">Manage
+        Employees</h2>
 
       <Tabs
         value={activeTab}
@@ -49,7 +51,7 @@ const Employees: React.FC = () => {
         variant="fullWidth"
         TabIndicatorProps={{
           style: {
-            backgroundColor: `${theme.palette.grey[500]}`,
+            backgroundColor: `${theme.palette.grey[900]}`,
           }
         }}
       >

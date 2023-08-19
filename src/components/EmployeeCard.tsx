@@ -1,5 +1,6 @@
 import React from 'react';
 import {Employee} from '../types';
+import {toISODateString} from "./form/utils/helpers.ts";
 
 interface EmployeeCardProps {
   employee: Employee;
@@ -18,15 +19,15 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
       onClick={onSelect ? () => onSelect(employee._id) : null}
     >
       <h3
-        className="text-xl font-bold mb-2">{order && `${order}. - `}{employee.name}</h3>
+        className="text-xl font-bold mb-2">{order && `${order}. `}{employee.name}</h3>
       <p
         className="text-gray-600">Email: {employee.email}</p>
       <p
-        className="text-gray-600">DOB: {employee.dateOfBirth}</p>
+        className="text-gray-600">DOB: {toISODateString(employee.dateOfBirth)}</p>
       <p
         className="text-gray-600">Phone: {employee.phoneNumber}</p>
       <p className="text-gray-600">Employment
-        Date: {employee.dateOfEmployment}</p>
+        Date: {toISODateString(employee.dateOfEmployment)}</p>
       <p
         className="text-gray-600">Address: {employee.homeAddress.addressLine1}</p>
       <p

@@ -21,16 +21,16 @@ const DeletedEmployees: React.FC = () => {
 
   return (
     <div
-      className='container mx-auto flex pb-12 flex-col justify-center items-center'>
-      <h3 className="text-xl font-bold my-6">Deleted
-        Employees</h3>
+      className='container mx-auto flex p-4 pb-12 flex-col justify-center items-center'>
+      <h2
+        className="text-2xl font-bold my-6 text-center">Deleted
+        Employees</h2>
       <div className='w-full max-w-2xl'>
         {!!deletedEmployees.length && deletedEmployees.map((employee, index) => (
           <EmployeeCard
             order={index + 1}
             key={employee._id}
             employee={employee}
-            // onSelect={onSelect}
           />
         ))}
         {!deletedEmployees.length &&

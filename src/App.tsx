@@ -16,35 +16,24 @@ import {ToastContainer} from 'react-toastify';
 import EmployeeFormProvider
   from "./contexts/EmployeeFormContext.tsx";
 import {
-  ThemeProvider,
-  createTheme
+  ThemeProvider
 } from '@mui/material/styles';
-
-const theme = createTheme({
-  palette: {
-    yellow: {
-      main: 'rgb(254, 249, 195)',
-      100: 'rgb(234, 229, 175)',
-      200: '#FFEB3B',
-      400: '#FDD835',
-      700: '#FBC02D',
-    },
-  },
-});
+import {defaultTheme} from './themes';
 
 const router = createBrowserRouter(routes);
 
 const App: React.FC = () => {
   return (
-    // Top-level error boundary to catch any unhandled errors in child components
     <ErrorBoundary>
       <Provider store={store}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <ThemeProvider theme={theme}>
+          <ThemeProvider theme={defaultTheme}>
             <Navigation/>
-            <EmployeeFormProvider>
-              <RouterProvider router={router}/>
-            </EmployeeFormProvider>
+            <div className='pt-16'>
+              <EmployeeFormProvider>
+                <RouterProvider router={router}/>
+              </EmployeeFormProvider>
+            </div>
             <ToastContainer/>
           </ThemeProvider>
         </LocalizationProvider>

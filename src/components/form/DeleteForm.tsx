@@ -2,7 +2,6 @@ import React, {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {
   Autocomplete,
-  Button,
   FormControl,
   TextField
 } from "@mui/material";
@@ -11,6 +10,7 @@ import {softDeleteEmployee} from "../../redux/actions";
 import {RootState, AppDispatch} from "../../redux/store";
 import {toast} from "react-toastify";
 import {useTheme} from "@mui/material/styles";
+import CustomButton from "../CustomButton.tsx";
 
 const DeleteForm: React.FC = () => {
   const theme = useTheme();
@@ -68,8 +68,9 @@ const DeleteForm: React.FC = () => {
           )}
         />
       </FormControl>
-      <Button
+      <CustomButton
         type="submit"
+        label="Soft Delete Employee"
         sx={{
           backgroundColor: `${theme.palette.grey[200]}`,
           padding: '.75rem 1.25rem',
@@ -80,7 +81,7 @@ const DeleteForm: React.FC = () => {
         }}
       >
         Soft Delete Employee
-      </Button>
+      </CustomButton>
     </form>
   );
 };

@@ -3,7 +3,7 @@ export const toISODateString = (dateString: string): string => {
   if (isNaN(date.getTime())) {
     return "";
   }
-  return date.toISOString();
+  return date.toISOString().split('T')[0];
 };
 
 export const capitalizeFirstLetter = (word: string): string => {
@@ -22,8 +22,7 @@ export const getValueByPath = (obj: any, path: string): any => {
 export function debounce(func, wait) {
   let timeout;
   return function (...args) {
-    const context = this;
     clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), wait);
+    timeout = setTimeout(() => func.apply(this, args), wait);
   };
 }

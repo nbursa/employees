@@ -4,7 +4,6 @@ import {RootState} from "../../redux/store.ts";
 import useEmployeeForm
   from "../../hooks/useEmployeeForm.tsx";
 import {
-  Button,
   FormControl,
   FormGroup
 } from "@mui/material";
@@ -13,6 +12,7 @@ import FormFieldsGroup
 import {capitalizeFirstLetter} from "./utils/helpers";
 import FormSelect from "./components/FormSelect.tsx";
 import {EmployeeFormProps} from "../../types";
+import CustomButton from "../CustomButton.tsx";
 // import {useTheme} from "@mui/material/styles";
 
 const EmployeeForm: React.FC<EmployeeFormProps> = ({formType}) => {
@@ -47,8 +47,9 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({formType}) => {
         <FormFieldsGroup/>
       </FormGroup>
 
-      <Button
+      <CustomButton
         type="submit"
+        label={`${formType} Employee`}
         sx={{
           backgroundColor: theme => theme.palette.grey[200],
           padding: '.75rem 1.25rem',
@@ -57,9 +58,21 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({formType}) => {
             backgroundColor: theme => theme.palette.grey[300],
           },
         }}
-      >
-        {`${formType} Employee`}
-      </Button>
+      />
+
+      {/*<Button*/}
+      {/*  type="submit"*/}
+      {/*  sx={{*/}
+      {/*    backgroundColor: theme => theme.palette.grey[200],*/}
+      {/*    padding: '.75rem 1.25rem',*/}
+      {/*    color: theme => theme.palette.grey[700],*/}
+      {/*    '&:hover': {*/}
+      {/*      backgroundColor: theme => theme.palette.grey[300],*/}
+      {/*    },*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  {`${formType} Employee`}*/}
+      {/*</Button>*/}
     </form>
   );
 };
